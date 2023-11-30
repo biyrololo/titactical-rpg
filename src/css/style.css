@@ -1,0 +1,26 @@
+body{
+    overflow: hidden;
+}
+canvas{
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+.trias{
+    animation: triaset ease-in-out 0.1s 0.2s;
+}
+@keyframes triaset{
+    0%, 100%{
+        transform: rotate(0deg);
+    }
+    25%{
+        transform: rotate(10deg);
+    }
+    75%{
+        transform: rotate(-10deg);
+    }
+}
+@font-face {
+    font-family: 'pixel';
+    src: url('../pixelcyr_normal.ttf');
+}
