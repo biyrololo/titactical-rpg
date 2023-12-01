@@ -18,7 +18,7 @@ class Entity{
         }
         this.freq={v: 0, time: freq[this.name]}
         this.chosen=false;
-        this.pos=pos
+        this.pos=pos;
         this.attacked={to: false, from: false, anim: false, pos: {x: 0, y: 0}, is: false, fromPos: {x: 0,y:0}}
         this.time={max: 60, cur: 0};
         this.animTimeAttack={max: this.anims.attack*this.freq.time, cur: 0};
@@ -453,6 +453,29 @@ const allImages={
     'warrior2':generate('warrior2', 3),
     'hero':generate('hero', 2)
 };
+
+const PLAYER_ACHIEVEMENTS={
+    firstLevel: {
+        isCompleted: false,
+        state: 0,
+        roadColor: '#8F9779'
+    },
+    secondLevel: {
+        isCompleted: false,
+        state: 0,
+        roadColor: '#6495ED'
+    },
+    thirdLevel: {
+        isCompleted: false,
+        state: 0,
+        roadColor: '#8B4513'
+    },
+    fourthLevel: {
+        isCompleted: false,
+        state: 0
+    }
+}
+
 const Appereances={
     yellow:{
         back: generateImage("appearance", "yellow-back"),
@@ -555,26 +578,28 @@ const transitionParams={active: false, to: false, time: 0, maxTime: 30,onMiddle:
 changeMoneyParams={time: 0, maxTime: 120, delta: 0, color:0, opacity:1, active: false},
 moveAtEndParams={active:false,time:0,maxTime:100,maxDist:canvas.width*0.8,dist:0},
 start = new Btn({x:canvas.width*0.8, y:0},{width: canvas.width*0.2, height: canvas.height*0.2},'старт',{bg:'red',text:'black', bottom: 'rgb(200,0,0)',hover:'rgb(220,0,0)'},{name:'pixel',size: canvas.height*0.1}, startGame),
-firstLevels= new Btn({x:canvas.width*0.1,y:canvas.height*0.1},{width: canvas.width*0.1,height:canvas.height*0.2/DRAWN_SIZE_RATIO},'Лес',{bg:'#3870d1',text:'white', bottom: '#0b409c',hover:'#104db5'},{name: 'pixel', size: canvas.width*0.05},()=>{if(!transitionParams.active)transition(true, ()=>{
+firstLevels= new Btn({x:canvas.width*0.1,y:canvas.height*0.1},{width: canvas.width*0.1,height:canvas.height*0.2/DRAWN_SIZE_RATIO},'Лес',{bg:'#96A879',text:'white', bottom: '#4E553D',hover:'#5CB85C'},{name: 'pixel', size: canvas.width*0.05},()=>{if(!transitionParams.active)transition(true, ()=>{
     changeMoneyParams.time=0;
     changeMoney();
     levels=firstLevel;
     gameState=1;
     gameClrLevel="#45FF1C";
     gameBgLevel="#1A600A";
+    curLevelAchievment = PLAYER_ACHIEVEMENTS.firstLevel;
     loadFirst();
     
 });}),
-secondLevels = new Btn({x:canvas.width*0.3,y:canvas.height*0.1},{width: canvas.width*0.15,height:canvas.height*0.2/DRAWN_SIZE_RATIO},'Зимний лес',{bg:'#3870d1',text:'white', bottom: '#0b409c',hover:'#104db5'},{name: 'pixel', size: canvas.width*0.05},()=>{if(!transitionParams.active)transition(true, ()=>{
+secondLevels = new Btn({x:canvas.width*0.3,y:canvas.height*0.1},{width: canvas.width*0.15,height:canvas.height*0.2/DRAWN_SIZE_RATIO},'Зимний лес',{bg:'#8BD0E5 ',text:'white', bottom: '#708090',hover:'#4DA6FF'},{name: 'pixel', size: canvas.width*0.05},()=>{if(!PLAYER_ACHIEVEMENTS.firstLevel.isCompleted) return;if(!transitionParams.active)transition(true, ()=>{
     changeMoneyParams.time=0;
     changeMoney();
     levels=secondLevel;
     gameState=1;
     gameClrLevel="#0CBEFF";
     gameBgLevel="#065F7F";
+    curLevelAchievment = PLAYER_ACHIEVEMENTS.secondLevel;
     loadFirst();
 });}),
-thirdLevels = new Btn({x:canvas.width*0.25,y:canvas.height*0.4},{width: canvas.width*0.25,height:canvas.height*0.2/DRAWN_SIZE_RATIO},'Подножие вуклана',{bg:'#E41719',text:'white', bottom: '#8C212C',hover:'#9E1E22'},{name: 'pixel', size: canvas.width*0.05},()=>{if(!transitionParams.active)transition(true, ()=>{
+thirdLevels = new Btn({x:canvas.width*0.25,y:canvas.height*0.4},{width: canvas.width*0.25,height:canvas.height*0.2/DRAWN_SIZE_RATIO},'Подножие вуклана',{bg:'#D2B48C',text:'white', bottom: '#895838',hover:'#CD853F '},{name: 'pixel', size: canvas.width*0.05},()=>{if(!PLAYER_ACHIEVEMENTS.secondLevel.isCompleted) return;if(!transitionParams.active)transition(true, ()=>{
     changeMoneyParams.time=0;
     changeMoney();
     levels=thirdLevel;
@@ -582,9 +607,10 @@ thirdLevels = new Btn({x:canvas.width*0.25,y:canvas.height*0.4},{width: canvas.w
     gameClrLevel="#E41719";
     gameBgLevel="#8C212C";
     colorUI="white";
+    curLevelAchievment = PLAYER_ACHIEVEMENTS.thirdLevel;
     loadFirst();
 });}),
-fourthLevels = new Btn({x:canvas.width*0.75,y:canvas.height*0.4},{width: canvas.width*0.15,height:canvas.height*0.2/DRAWN_SIZE_RATIO},'Вулкан',{bg:'#7C7C7C',text:'white', bottom: '#4A4A4A',hover:'#5B5B5B'},{name: 'pixel', size: canvas.width*0.05},()=>{if(!transitionParams.active)transition(true, ()=>{
+fourthLevels = new Btn({x:canvas.width*0.75,y:canvas.height*0.4},{width: canvas.width*0.15,height:canvas.height*0.2/DRAWN_SIZE_RATIO},'Вулкан',{bg:'#FF4500 ',text:'white', bottom: '#8B0000',hover:'#FF5D00'},{name: 'pixel', size: canvas.width*0.05},()=>{if(!PLAYER_ACHIEVEMENTS.thirdLevel.isCompleted) return;if(!transitionParams.active)transition(true, ()=>{
     changeMoneyParams.time=0;
     changeMoney();
     levels=fourthLevel;
@@ -592,6 +618,7 @@ fourthLevels = new Btn({x:canvas.width*0.75,y:canvas.height*0.4},{width: canvas.
     gameClrLevel="#7C7C7C";
     gameBgLevel="#4A4A4A";
     colorUI="white";
+    curLevelAchievment = PLAYER_ACHIEVEMENTS.fourthLevel;
     loadFirst();
 });}),
 
@@ -602,11 +629,12 @@ enemiesPos={
     4:{x:canvas.width*.55,y:canvas.height*0.8},
     5:{x:canvas.width*.9,y:canvas.height*0.8}},
 heroesPos={
-    1:{x:canvas.width*0.1,y:canvas.height*0.2}, 
+    1:{x:canvas.width*0.1,y: canvas.height*0.2}, 
     2:{x: canvas.width*0.1,y:canvas.height*0.65},
     3:{x:canvas.width*0.27, y: canvas.height*0.15},
     4:{x:canvas.width*0.32,y:canvas.height*0.47}, 
-    5:{x:canvas.width*0.24, y:canvas.height*0.8}},
+    5:{x:canvas.width*0.24, y:canvas.height*0.8}    
+},
 menuPoses=[
     {x:canvas.width*0.2,y:canvas.height*0.5},
     {x:canvas.width*0.3,y:canvas.height*0.15}, 
@@ -616,9 +644,10 @@ menuPoses=[
     {x:canvas.width*0.5,y:canvas.height*0.2},
     {x:canvas.width*0.7,y:canvas.height*0.2},
     {x:canvas.width*0.3,y:canvas.height*0.5},
-    {x:canvas.width*0.5,y:canvas.height*0.5}],
+    {x:canvas.width*0.5,y:canvas.height*0.5}];
 
 
+const
 evilWizard1={damage: 2, maxHp: 200, cost: 20, countAttack: 1, critChance: 10, typeAppereance: 'purple'},
 evilWizard2={damage: 2, maxHp: 50, cost: 10, countAttack: 2, critChance: 5, typeAppereance: 'blue'},
 girl1={damage: 1, maxHp: 70, cost: 5,countAttack:1, critChance: 15, typeAppereance: 'blue'},
@@ -695,6 +724,7 @@ window.addEventListener('click', ()=>{
     })
 
 var prevTime = 0;
+var curLevelAchievment = {};
 
 function renderGame(deltaTime){
     c.strokeStyle='black';
@@ -713,8 +743,13 @@ function renderGame(deltaTime){
             heroes[chosen].attackEnemy(e.pos, i);
         }
         if(e.die) {
-            playerMoney+=enemies[i].cost; 
-            changeMoney(enemies[i].cost, true);
+            if(e.isBoss){
+                curLevelAchievment.isCompleted = true;
+            }
+            if(e.cost > 0){
+                playerMoney+=enemies[i].cost; 
+                changeMoney(enemies[i].cost, true);
+            }
             enemies.splice(i,1);
         }
         // else e.draw();
@@ -740,14 +775,15 @@ function renderGame(deltaTime){
     c.textAlign='left';
     c.textBaseline='top';
     c.fillStyle='white';
-    c.fillText(playerMoney, 10, canvas.height*0.01);
-    c.strokeText(playerMoney, 10, canvas.height*0.01);
+    const moneyPosY = isMobile?canvas.height*0.95-50:canvas.height*0.01;
+    c.fillText(playerMoney, 10, moneyPosY);
+    c.strokeText(playerMoney, 10, moneyPosY);
     if(changeMoneyParams.active){
         c.fillStyle=`rgba(${changeMoneyParams.color},${changeMoneyParams.opacity})`;
-        c.fillText(`${changeMoneyParams.delta>0?'+':''}${changeMoneyParams.delta}`, 10, 50);
+        c.fillText(`${changeMoneyParams.delta>0?'+':''}${changeMoneyParams.delta}`, 10, isMobile?moneyPosY-50:50);
         changeMoney();
     }
-    c.drawImage(money,0,0,102,118,String(playerMoney).length*25+20, 10+canvas.height*0.01,50,50);
+    c.drawImage(money,0,0,102,118,String(playerMoney).length*25+20, 10+moneyPosY,50,50);
 }
 function drawHeroes(){
     for(let i = 0; i < 5; i++){
@@ -786,17 +822,26 @@ function renderMenu(deltaTime){
     start.draw();
 }
 function renderChoosingLevel(){
-    c.fillStyle='#454545';
+    c.fillStyle='#656565';
     c.fillRect(0,0,canvas.width,canvas.height);
     aviableLevels.forEach((l,i)=>{
-        c.strokeStyle = 'green';
-        c.lineWidth = canvas.height/25;
         // draw line from center of level to center of next
         if(i<aviableLevels.length-1){
+            const levelState = PLAYER_ACHIEVEMENTS[Object.keys(PLAYER_ACHIEVEMENTS)[i]];
+            c.strokeStyle = levelState.isCompleted?levelState.roadColor:'#404040';
+            c.lineWidth = canvas.height/25;
             c.beginPath();
             c.moveTo(l.pos.x + l.size.width/2, l.pos.y + l.size.height/2);
             c.lineTo(aviableLevels[i+1].pos.x + aviableLevels[i+1].size.width/2, aviableLevels[i+1].pos.y + aviableLevels[i+1].size.height/2);
             c.stroke();
+            if(levelState.state > 0 && !levelState.isCompleted){
+                c.strokeStyle = levelState.roadColor;
+                c.lineWidth = canvas.height/25;
+                c.beginPath();
+                c.moveTo(l.pos.x + l.size.width/2, l.pos.y + l.size.height/2);
+                c.lineTo(l.pos.x  + l.size.width/2 + (aviableLevels[i+1].pos.x + aviableLevels[i+1].size.width/2 - l.pos.x - l.size.width/2)*levelState.state/1.4, l.pos.y + l.size.height/2 +(aviableLevels[i+1].pos.y + aviableLevels[i+1].size.height/2 - l.pos.y - l.size.height/2)*levelState.state/1.4);
+                c.stroke();
+            }
         }
     })
     c.strokeStyle = '';
@@ -828,8 +873,13 @@ function loadLevel(num){
     enemies.forEach(h=>{h.current.health=h.maxHp; h.die=false;h.dieTimer=(h.anims.death-1)*h.freq.time;h.current.img=h.idle;h.current.anim=h.anims.idle;h.takenDamage={last: h.maxHp, cur: h.maxHp, delta: 0};});
     enemies.sort(function(a,b){return a.pos.y - b.pos.y;})
     curLevel=num;
-    playerMoney+=num*10;
-    changeMoney(num*10, true);
+    if(num > 0){
+        playerMoney+=num*10;
+        changeMoney(num*10, true);
+    }
+    if(num/levels.length>curLevelAchievment.state){
+        curLevelAchievment.state = num/levels.length;
+    }
     chosen=0;
     playerMove=true;
 }
