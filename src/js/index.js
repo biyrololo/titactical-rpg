@@ -472,7 +472,13 @@ const PLAYER_ACHIEVEMENTS={
     },
     fourthLevel: {
         isCompleted: false,
-        state: 0
+        state: 0,
+        roadColor: '#8B4513'
+    },
+    fifthLevel: {
+        isCompleted: false,
+        state: 0,
+        roadColor: '#8B4513'
     }
 }
 
@@ -532,7 +538,7 @@ window.addEventListener('resize', ()=>{
 const money = new Image(), sword = new Image(), heart = new Image(), bgParams = new Image(),
 bgMenu = new Image(), circle = new Image(), caveSnowBegin = new Image(), grassMiddle = new Image(), caveSnowEnd = new Image(), caveSnowMiddle = new Image(),
 grassBegin = new Image(), grassEnd = new Image(), magmaMiddle = new Image(), healthBar={bg:new Image(), colour: new Image(), yellow: new Image()},
-pointer = new Image(), custleEnd = new Image(),
+pointer = new Image(), custleEnd = new Image(), mountainPeak = new Image(),
 healthBarBoss={bg:new Image(), colour: new Image(), yellow: new Image()},
 
 
@@ -565,7 +571,8 @@ money.src=`${dirImages}/money.png`;sword.src=`${dirImages}/sword.png`;heart.src=
 circle.src=`${dirImages}/circle.png`;caveSnowBegin.src=`${dirImages}/CaveSnow2.png`;grassMiddle.src=`${dirImages}/grass1.png`;
 grassEnd.src=`${dirImages}/grassEnd.png`;grassBegin.src=`${dirImages}/grassBegin.png`; //CaveSnow3
 caveSnowMiddle.src=`${dirImages}/CaveSnow4.png`;caveSnowEnd.src=`${dirImages}/CaveSnow3.png`;
-custleEnd.src=`${dirImages}/custleBegin.png`
+custleEnd.src=`${dirImages}/custleBegin.png`;
+mountainPeak.src=`${dirImages}/mountainPeakMiddle.png`;
 magmaMiddle.src=`${dirImages}/magmaMiddle.png`;
 healthBar.bg.src=`${dirImages}/healthBarBg.png`;
 healthBar.colour.src=`${dirImages}/healthBarColour.png`;
@@ -578,7 +585,7 @@ const transitionParams={active: false, to: false, time: 0, maxTime: 30,onMiddle:
 changeMoneyParams={time: 0, maxTime: 120, delta: 0, color:0, opacity:1, active: false},
 moveAtEndParams={active:false,time:0,maxTime:100,maxDist:canvas.width*0.8,dist:0},
 start = new Btn({x:canvas.width*0.8, y:0},{width: canvas.width*0.2, height: canvas.height*0.2},'старт',{bg:'red',text:'black', bottom: 'rgb(200,0,0)',hover:'rgb(220,0,0)'},{name:'pixel',size: canvas.height*0.1}, startGame),
-firstLevels= new Btn({x:canvas.width*0.1,y:canvas.height*0.1},{width: canvas.width*0.1,height:canvas.height*0.2/DRAWN_SIZE_RATIO},'Лес',{bg:'#96A879',text:'white', bottom: '#4E553D',hover:'#5CB85C'},{name: 'pixel', size: canvas.width*0.05},()=>{if(!transitionParams.active)transition(true, ()=>{
+firstLevels= new Btn({x:canvas.width*0.05,y:canvas.height*0.1},{width: canvas.width*0.1,height:canvas.height*0.2/DRAWN_SIZE_RATIO},'Лес',{bg:'#96A879',text:'white', bottom: '#4E553D',hover:'#5CB85C'},{name: 'pixel', size: canvas.width*0.05},()=>{if(!transitionParams.active)transition(true, ()=>{
     changeMoneyParams.time=0;
     changeMoney();
     levels=firstLevel;
@@ -589,7 +596,7 @@ firstLevels= new Btn({x:canvas.width*0.1,y:canvas.height*0.1},{width: canvas.wid
     loadFirst();
     
 });}),
-secondLevels = new Btn({x:canvas.width*0.3,y:canvas.height*0.1},{width: canvas.width*0.15,height:canvas.height*0.2/DRAWN_SIZE_RATIO},'Зимний лес',{bg:'#8BD0E5 ',text:'white', bottom: '#708090',hover:'#4DA6FF'},{name: 'pixel', size: canvas.width*0.05},()=>{if(!PLAYER_ACHIEVEMENTS.firstLevel.isCompleted) return;if(!transitionParams.active)transition(true, ()=>{
+secondLevels = new Btn({x:canvas.width*0.2,y:canvas.height*0.1},{width: canvas.width*0.15,height:canvas.height*0.2/DRAWN_SIZE_RATIO},'Зимний лес',{bg:'#8BD0E5 ',text:'white', bottom: '#708090',hover:'#4DA6FF'},{name: 'pixel', size: canvas.width*0.05},()=>{if(!PLAYER_ACHIEVEMENTS.firstLevel.isCompleted) return;if(!transitionParams.active)transition(true, ()=>{
     changeMoneyParams.time=0;
     changeMoney();
     levels=secondLevel;
@@ -599,7 +606,7 @@ secondLevels = new Btn({x:canvas.width*0.3,y:canvas.height*0.1},{width: canvas.w
     curLevelAchievment = PLAYER_ACHIEVEMENTS.secondLevel;
     loadFirst();
 });}),
-thirdLevels = new Btn({x:canvas.width*0.25,y:canvas.height*0.4},{width: canvas.width*0.25,height:canvas.height*0.2/DRAWN_SIZE_RATIO},'Подножие вуклана',{bg:'#D2B48C',text:'white', bottom: '#895838',hover:'#CD853F '},{name: 'pixel', size: canvas.width*0.05},()=>{if(!PLAYER_ACHIEVEMENTS.secondLevel.isCompleted) return;if(!transitionParams.active)transition(true, ()=>{
+thirdLevels = new Btn({x:canvas.width*0.15,y:canvas.height*0.4},{width: canvas.width*0.25,height:canvas.height*0.2/DRAWN_SIZE_RATIO},'Подножие вуклана',{bg:'#D2B48C',text:'white', bottom: '#895838',hover:'#CD853F '},{name: 'pixel', size: canvas.width*0.05},()=>{if(!PLAYER_ACHIEVEMENTS.secondLevel.isCompleted) return;if(!transitionParams.active)transition(true, ()=>{
     changeMoneyParams.time=0;
     changeMoney();
     levels=thirdLevel;
@@ -610,13 +617,24 @@ thirdLevels = new Btn({x:canvas.width*0.25,y:canvas.height*0.4},{width: canvas.w
     curLevelAchievment = PLAYER_ACHIEVEMENTS.thirdLevel;
     loadFirst();
 });}),
-fourthLevels = new Btn({x:canvas.width*0.75,y:canvas.height*0.4},{width: canvas.width*0.15,height:canvas.height*0.2/DRAWN_SIZE_RATIO},'Вулкан',{bg:'#FF4500 ',text:'white', bottom: '#8B0000',hover:'#FF5D00'},{name: 'pixel', size: canvas.width*0.05},()=>{if(!PLAYER_ACHIEVEMENTS.thirdLevel.isCompleted) return;if(!transitionParams.active)transition(true, ()=>{
+fourthLevels = new Btn({x:canvas.width*0.55,y:canvas.height*0.4},{width: canvas.width*0.15,height:canvas.height*0.2/DRAWN_SIZE_RATIO},'Вулкан',{bg:'#FF4500 ',text:'white', bottom: '#8B0000',hover:'#FF5D00'},{name: 'pixel', size: canvas.width*0.05},()=>{if(!PLAYER_ACHIEVEMENTS.thirdLevel.isCompleted) return;if(!transitionParams.active)transition(true, ()=>{
     changeMoneyParams.time=0;
     changeMoney();
     levels=fourthLevel;
     gameState=1;
     gameClrLevel="#7C7C7C";
     gameBgLevel="#4A4A4A";
+    colorUI="white";
+    curLevelAchievment = PLAYER_ACHIEVEMENTS.fourthLevel;
+    loadFirst();
+});}),
+fivthLevels = new Btn({x:canvas.width*0.45,y:canvas.height*0.1},{width: canvas.width*0.2,height:canvas.height*0.2/DRAWN_SIZE_RATIO},'Горные вершины',{bg:'#B0C4DE ',text:'white', bottom: '#A9A9A9',hover:'#4682B4'},{name: 'pixel', size: canvas.width*0.05},()=>{if(!PLAYER_ACHIEVEMENTS.fourthLevel.isCompleted) return;if(!transitionParams.active)transition(true, ()=>{
+    changeMoneyParams.time=0;
+    changeMoney();
+    levels=fivthLevel;
+    gameState=1;
+    gameClrLevel="#F9EED2";
+    gameBgLevel="#3E8587";
     colorUI="white";
     curLevelAchievment = PLAYER_ACHIEVEMENTS.fourthLevel;
     loadFirst();
@@ -657,8 +675,8 @@ skeleton = {countAttack: 2, damage: 1, cost: 20, maxHp: 144, critChance: 30, typ
 goblin = {countAttack:2,damage: 1, cost: 25, maxHp:90, critChance: 5, typeAppereance: 'blue'},
 mushroom = {countAttack: 2, damage: 1.5, cost: 30, maxHp: 100, critChance: 5, typeAppereance: 'blue'},
 warrior = {countAttack: 3, damage: 2, cost: 0, maxHp: 300, critChance: 60, typeAppereance: 'yellow'},
-warrior2 = {countAttack: 3, damage: 2, cost: 0, maxHp: 500, critChance: 60, typeAppereance: 'yellow'},
-warrior3 = {countAttack: 3, damage: 3, cost: 0, maxHp: 700, critChance: 60, typeAppereance: 'yellow'},
+warrior2 = {countAttack: 3, damage: 4, cost: 50, maxHp: 600, critChance: 60, typeAppereance: 'yellow'},
+warrior3 = {countAttack: 3, damage: 4, cost: 0, maxHp: 700, critChance: 60, typeAppereance: 'yellow'},
 archer={countAttack: 1, damage: 3, cost: 1, maxHp: 700, critChance: 99, typeAppereance: 'blue'},
 warrior21 = {countAttack: 2, damage: 3, cost: 35, maxHp: 100, critChance: 25, typeAppereance: 'blue'},
 hero = {countAttack: 2, damage: 3, cost: 35, maxHp: 500, critChance: 100, typeAppereance: 'yellow'},
@@ -691,28 +709,34 @@ warrior21Menu = new EntityMenu(15, new Entity('warrior2', 135, warrior21),'warri
 // archerMenu = new EntityMenu(5, new Entity('archer', 128, archer), 'archer', 128, archer, menuPoses[0]);
 
 var gameBgLevel, gameClrLevel, colorUI="black";
-var firstLevel=[{enemies: [{obj: mushroomObj, pos: 3}], bg: grassBegin},
-{enemies:[{obj: goblinObj, pos: 2}, {obj: mushroomObj, pos: 3}, {obj: goblinObj, pos: 5}], bg: grassMiddle},
-{enemies:[{obj: mushroomObj, pos: 2}, {obj: mushroomObj, pos: 3}, {obj: mushroomObj, pos: 4}], bg: grassMiddle},
+var firstLevel=[{enemies: [{obj: goblinObj, pos: 3}], bg: grassBegin},
+{enemies:[{obj: goblinObj, pos: 2}, {obj: goblinObj, pos: 3}, {obj: goblinObj, pos: 5}], bg: grassMiddle},
+{enemies:[{obj: mushroomObj, pos: 2}, {obj: goblinObj, pos: 3}, {obj: mushroomObj, pos: 4}, {obj: goblinObj, pos: 5}], bg: grassMiddle},
 {enemies:[{obj: mushroomObj, pos: 1}, {obj: mushroomObj, pos: 2}, {obj: goblinObj, pos: 3}, {obj: mushroomObj, pos: 4}, {obj: mushroomObj, pos: 5}], bg: grassMiddle},
 {enemies:[{obj: warriorObj, pos: 3}], bg: grassEnd}],
 secondLevel=[{enemies: [{obj: warrior21Obj, pos: 3},], bg: caveSnowBegin},
 {enemies:[{obj: warrior21Obj, pos: 2}, {obj: kingObj, pos: 3}, {obj: warrior21Obj, pos: 5}], bg: caveSnowMiddle},
-{enemies:[{obj: kingObj, pos: 4},{obj: skeletonObj, pos: 5},{obj: skeletonObj, pos: 3},{obj: skeletonObj, pos: 2},{obj: skeletonObj, pos: 1}],bg: caveSnowMiddle},
-{enemies:[{obj: kingObj, pos: 5}, {obj: kingObj, pos: 1}, {obj: kingObj, pos: 3}, {obj: skeletonObj, pos: 4}, {obj: skeletonObj, pos: 2}],bg: caveSnowMiddle},
+{enemies:[{obj: kingObj, pos: 4},{obj: warrior21Obj, pos: 5},{obj: kingObj, pos: 2},{obj: warrior21Obj, pos: 1}],bg: caveSnowMiddle},
+{enemies:[{obj: kingObj, pos: 5}, {obj: kingObj, pos: 1}, {obj: kingObj, pos: 3}],bg: caveSnowMiddle},
 {enemies:[{obj: heroObj, pos: 3}], bg: caveSnowEnd}],
 thirdLevel=[{enemies: [{obj: evilWizard2Obj, pos: 1}, {obj: evilWizard2Obj, pos: 4}], bg: magmaMiddle},
 {enemies:[{obj: evilWizard2Obj, pos: 1}, {obj: evilWizard2Obj, pos: 4}, {obj: evilWizard2Obj, pos: 3}], bg: magmaMiddle},
 {enemies:[{obj: evilWizard2Obj, pos: 1}, {obj: evilWizard1Obj, pos: 2}, {obj: evilWizard2Obj, pos: 4}, {obj: evilWizard1Obj, pos: 5}], bg: magmaMiddle},
 {enemies:[{obj: warrior3Obj, pos: 3}], bg: magmaMiddle}],
 fourthLevel=[{enemies: [{obj: heroObj, pos: 3},], bg: custleEnd},],
+fivthLevel=[
+    {enemies: [{obj: mushroomObj, pos: 2}, {obj: mushroomObj, pos: 4}, {obj: kingObj, pos: 5}], bg: mountainPeak},
+    {enemies: [{obj: goblinObj, pos: 2}, {obj: mushroomObj, pos: 3}, {obj: goblinObj, pos: 4}, {obj: evilWizard2Obj, pos: 5}, {obj: evilWizard2Obj, pos: 1}], bg: mountainPeak},
+    {enemies: [{obj: kingObj, pos: 1}, {obj: mushroomObj, pos: 2},  {obj: evilWizard2Obj, pos: 3}, {obj: evilWizard1Obj, pos: 4}, {obj: eyeObj, pos: 5}], bg: mountainPeak},
+    {enemies: [{obj: warrior2Obj, pos: 3}], bg: mountainPeak},
+],
 levels = [],
 
 curHeroes = [],curLevel = 0,heroes = [], enemies=[], playerMove=true,chosen = 0,
 drawnHeroes = [],
 
 
-aviableLevels=[firstLevels,secondLevels, thirdLevels, fourthLevels],
+aviableLevels=[firstLevels,secondLevels, thirdLevels, fourthLevels, fivthLevels],
 aviableHeroes=[evilWizard1Menu, evilWizard2Menu,medievalKingMenu,eyeMenu,skeletonMenu,goblinMenu,mushroomMenu, warrior21Menu];
 animate();
 window.addEventListener('mousemove', e=>{
@@ -751,6 +775,13 @@ function renderGame(deltaTime){
                 changeMoney(enemies[i].cost, true);
             }
             enemies.splice(i,1);
+            // if(enemies.length==0){
+            //     setTimeout(()=>{
+            //         if(!moveAtEndParams.active && enemies.length==0){
+            //             moveAtEnd(true);
+            //         }
+            //     }, 1200)
+            // }
         }
         // else e.draw();
     })
