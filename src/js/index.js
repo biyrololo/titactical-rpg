@@ -1,6 +1,8 @@
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent); 
 const DRAWN_SIZE_RATIO = isMobile ? 0.8 : 1;
 
+var isGameStarted = false;
+
 class Entity{
     constructor(name, size, anims,pos={x:0,y:0}, enemy=false, isBoss=false){
         this.secondAttack=false;
@@ -20,7 +22,7 @@ class Entity{
         this.chosen=false;
         this.pos=pos;
         this.attacked={to: false, from: false, anim: false, pos: {x: 0, y: 0}, is: false, fromPos: {x: 0,y:0}}
-        this.time={max: 60, cur: 0};
+        this.time={max: 80, cur: 0};
         this.animTimeAttack={max: this.anims.attack*this.freq.time, cur: 0};
         this.damage=anims.damage;
         this.dieTimer=(this.anims.death-1)*this.freq.time;
@@ -40,7 +42,7 @@ class Entity{
             this.pos.x+=this.speed.x;
             this.pos.y+=this.speed.y;
             this.time.cur--;
-            if(this.time.cur==0){
+            if(this.time.cur<=0){
                 this.attacked.to=false;
                 this.chosenAttack = Math.floor(Math.random()*this.attacks.length);
                 this.current.img=this.attacks[this.chosenAttack];
@@ -73,11 +75,20 @@ class Entity{
                 heroes[this.chosenEnemy].current.anim=heroes[this.chosenEnemy].anims.hit;
             }
             else{
-                if(enemies[this.chosenEnemy].current){
+                if(enemies[this.chosenEnemy]?.current){
                     enemies[this.chosenEnemy].current.health-=this.damage;
                     enemHp = enemies[this.chosenEnemy].current.health;
                     enemies[this.chosenEnemy].current.img=enemies[this.chosenEnemy].hit;
                     enemies[this.chosenEnemy].current.anim=enemies[this.chosenEnemy].anims.hit;
+                }
+                else{
+                    this.chosenEnemy--;
+                    if(enemies[this.chosenEnemy]?.current){
+                        enemies[this.chosenEnemy].current.health-=this.damage;
+                        enemHp = enemies[this.chosenEnemy].current.health;
+                        enemies[this.chosenEnemy].current.img=enemies[this.chosenEnemy].hit;
+                        enemies[this.chosenEnemy].current.anim=enemies[this.chosenEnemy].anims.hit;
+                    }
                 }
             }
             this.damaged+=this.damage;}
@@ -133,8 +144,8 @@ class Entity{
                 this.attacked.from=false;
                 this.attacked.is=false;
                 this.pos=this.attacked.fromPos;
-                if(enemies.length==0) {if(curLevel<levels.length-1)moveAtEnd(true);else endGame();}//loadLevel(curLevel+1);
-                else if(heroes.length==0) endGame();
+                if(enemies.length==0 || (enemies.length==1 && (enemies[0]?.current?.health <= 0 || enemies[0]?.extraDamage >= enemies[0]?.current.health))) {if(curLevel<levels.length-1)moveAtEnd(true);else endGame();}//loadLevel(curLevel+1);
+                else if(heroes.length==0 || (heroes.length==1 && (heroes[0]?.current?.health <= 0 || heroes[0]?.extraDamage >= heroes[0]?.current.health))) endGame();
                 else if(this.isBoss && !this.secondAttack) {
                     this.current.img=moveAtEndParams.active?this.move:this.idle;
                     this.current.anim=moveAtEndParams.active?this.anims.move:this.anims.idle;
@@ -241,9 +252,6 @@ class Entity{
             this.extraDamage=0;
             if(this.current.health<=0){
                     this.current.animX=0;
-                    if(this.enemy && enemies.length === 1 && !moveAtEndParams.active){
-                        moveAtEnd(true);
-                    }
                     // if(this.enemy){
                     //     playerMoney+=enemies[this.chosenEnemy]?.cost || 0; changeMoney(enemies[this.chosenEnemy]?.cost || 0, true);
                     // }
@@ -365,21 +373,39 @@ class EntityMenu extends Entity{
         c.drawImage(this.current.img, this.current.animX*this.size,0,this.size, this.size, this.pos.x, this.pos.y, this.drawnSize,this.drawnSize);
     }
     showParameters(){ 
-        c.fillStyle="#66c961";
-        c.drawImage(pointer, 0, 0, pointer.width, pointer.height, this.pos.x+(this.enemy?(this.size-borders[this.name].left-(borders[this.name].right-borders[this.name].left)):(borders[this.name].left))*(this.drawnSize/this.size), this.pos.y-30+(borders[this.name].up)*(this.drawnSize/this.size),(borders[this.name].right-borders[this.name].left)*(this.drawnSize/this.size), 20);
-        c.font='30px pixel';
-        c.drawImage(bgParams, this.pos.x+(this.enemy?-150+1/4*this.drawnSize:3/4*this.drawnSize), this.pos.y+this.drawnSize/3-8);
-        c.fillStyle=playerMoney>=this.cost?'black':'red';
-        c.fillText(this.cost,this.pos.x+(this.enemy?-150+1/4*this.drawnSize:3/4*this.drawnSize)+60, this.pos.y+this.drawnSize/3+140);
-        c.drawImage(money, 0, 0, 102, 118, this.pos.x+(this.enemy?-150+1/4*this.drawnSize:3/4*this.drawnSize)+10, this.pos.y+this.drawnSize/3+130, 30, 30);
-        c.font='30px pixel';
-        c.fillStyle='black';
-        c.textAlign='left';
-        c.textBaseline='top';
-        c.drawImage(sword, 0, 0, 260, 260, this.pos.x+(this.enemy?-150+1/4*this.drawnSize:3/4*this.drawnSize), this.pos.y+this.drawnSize/3, 50, 50)
-        c.fillText(this.damage*(this.anims.attack-1.5)*this.freq.time, this.pos.x+(this.enemy?-150+1/4*this.drawnSize:3/4*this.drawnSize)+50, this.pos.y+this.drawnSize/3);
-        c.drawImage(heart, 0, 0, 249, 249, this.pos.x+(this.enemy?-150+1/4*this.drawnSize:3/4*this.drawnSize), this.pos.y+this.drawnSize/3+60, 50, 50);
-        c.fillText(this.maxHp, this.pos.x+(this.enemy?-150+1/4*this.drawnSize:3/4*this.drawnSize)+50, this.pos.y+this.drawnSize/3+60);
+        if(!isMobile){
+            c.fillStyle="#66c961";
+            c.drawImage(pointer, 0, 0, pointer.width, pointer.height, this.pos.x+(this.enemy?(this.size-borders[this.name].left-(borders[this.name].right-borders[this.name].left)):(borders[this.name].left))*(this.drawnSize/this.size), this.pos.y-30+(borders[this.name].up)*(this.drawnSize/this.size),(borders[this.name].right-borders[this.name].left)*(this.drawnSize/this.size), 20);
+            c.font='30px pixel';
+            c.drawImage(bgParams, this.pos.x+(this.enemy?-150+1/4*this.drawnSize:3/4*this.drawnSize), this.pos.y+this.drawnSize/3-8);
+            c.fillStyle=playerMoney>=this.cost?'black':'red';
+            c.fillText(this.cost,this.pos.x+(this.enemy?-150+1/4*this.drawnSize:3/4*this.drawnSize)+60, this.pos.y+this.drawnSize/3+140);
+            c.drawImage(money, 0, 0, 102, 118, this.pos.x+(this.enemy?-150+1/4*this.drawnSize:3/4*this.drawnSize)+10, this.pos.y+this.drawnSize/3+130, 30, 30);
+            c.font='30px pixel';
+            c.fillStyle='black';
+            c.textAlign='left';
+            c.textBaseline='top';
+            c.drawImage(sword, 0, 0, 260, 260, this.pos.x+(this.enemy?-150+1/4*this.drawnSize:3/4*this.drawnSize), this.pos.y+this.drawnSize/3, 50, 50)
+            c.fillText(this.damage*(this.anims.attack-1.5)*this.freq.time, this.pos.x+(this.enemy?-150+1/4*this.drawnSize:3/4*this.drawnSize)+50, this.pos.y+this.drawnSize/3);
+            c.drawImage(heart, 0, 0, 249, 249, this.pos.x+(this.enemy?-150+1/4*this.drawnSize:3/4*this.drawnSize), this.pos.y+this.drawnSize/3+60, 50, 50);
+            c.fillText(this.maxHp, this.pos.x+(this.enemy?-150+1/4*this.drawnSize:3/4*this.drawnSize)+50, this.pos.y+this.drawnSize/3+60);
+        }
+        else{
+            const topPos = this.pos.y+borders[this.name].up*this.drawnSize/this.size;
+            const leftPos = this.pos.x + this.drawnSize/2-50-10;
+            c.fillStyle="#66c961";
+            c.font='20px pixel';
+            // c.drawImage(bgParams,0, 0, bgParams.width, bgParams.height, leftPos-5, topPos-1, 100, 60);
+            c.fillStyle=playerMoney>=this.cost?'black':'red';
+            c.fillText(this.cost,leftPos+30, topPos+7, 20, 20);
+            c.drawImage(money, 0, 0, 102, 118, leftPos, topPos, 20, 20);
+            c.font='20px pixel';
+            c.fillStyle='black';
+            c.drawImage(sword, 0, 0, 260, 260, leftPos, topPos+20, 20, 20)
+            c.fillText(this.damage*(this.anims.attack-1.5)*this.freq.time, leftPos+30, topPos+25);
+            c.drawImage(heart, 0, 0, 249, 249, leftPos, topPos+40, 20, 20);
+            c.fillText(this.maxHp, leftPos+30, topPos+45);
+        }
     }
     onclick(){
         if(playerMoney>=this.cost && curHeroes.length<5 && gameState===0){
@@ -547,7 +573,7 @@ canvas.width=window.innerWidth;
 canvas.height=window.innerHeight;
 var wdithHealthBoss = canvas.width*0.6, 
 heightHealthBoss = wdithHealthBoss*11/(332);
-var playerMoney=99, gameState = 0, opacity=[];
+var playerMoney=3, gameState = 0, opacity=[];
 const attacks={'Goblin':{
     2:15
 },'Mushroom':{1:5},'medieval king':{2:15}, 'girl 1':{1:5}
@@ -566,6 +592,8 @@ function openFullscreen(element) {
 }
 
 canvas.addEventListener('click', ()=>{
+    canvas.width=window.innerWidth;
+    canvas.height=window.innerHeight;
     openFullscreen(canvas);
 })  
 
@@ -774,6 +802,15 @@ mushroomMenu = new EntityMenu(6, new Entity('Mushroom',150,mushroom),'Mushroom',
 warrior21Menu = new EntityMenu(16, new Entity('warrior2', 135, warrior21),'warrior2', 135, warrior21, menuPoses[8]);
 const archerMenu = new EntityMenu(20, new Entity('archer', 128, archer), 'archer', 128, archer, menuPoses[7]);
 goblinMenu.isAvailable = true;
+// mushroomMenu.isAvailable = true;
+// girl1Menu.isAvailable = true;
+// evilWizard1Menu.isAvailable = true;
+// evilWizard2Menu.isAvailable = true;
+// medievalKingMenu.isAvailable = true;
+// eyeMenu.isAvailable = true;
+// skeletonMenu.isAvailable = true;
+// warrior21Menu.isAvailable = true;
+// archerMenu.isAvailable = true;
 
 var gameBgLevel, gameClrLevel, colorUI="black";
 var firstLevel=[{enemies: [{obj: goblinObj, pos: 3}], bg: grassBegin},
@@ -914,7 +951,7 @@ function renderMenu(deltaTime){
         h.draw(deltaTime);
         c.filter = 'brightness(1)';
     });
-    aviableHeroes.forEach(h=>{if(!h.isAvailable) return;if(h.isHover())h.hover();});
+    aviableHeroes.forEach(h=>{if(!h.isAvailable) return;if(h.isHover())h.hover();if(isMobile) h.showParameters()});
     c.font=`50px pixel`;
     c.textAlign='left';
     c.textBaseline='top';
@@ -959,6 +996,7 @@ function renderChoosingLevel(){
 }
 function animate(){
     requestAnimationFrame(animate);
+    if(!isGameStarted) return;
     const currentTime = performance.now();
     const deltaTime = (currentTime - prevTime)/1000;
     document.body.style.cursor='';
@@ -990,6 +1028,7 @@ function loadLevel(num){
     }
     chosen=0;
     playerMove=true;
+    saveData();
 }
 function loadFirst(){
     loadLevel(0);
@@ -1020,6 +1059,7 @@ function startGame(){
         }
     }
 function endGame(){
+        saveData();
         if(!transitionParams.active)
         transition(true,()=>{
         if(playerMoney < 2) playerMoney = 2;
@@ -1120,3 +1160,71 @@ function generate(name, countAttack=1){
     left: generateCharacterImages(name, countAttack, 'Left')};
     return character;
 }
+
+function saveData(){
+    localStorage.achievements=JSON.stringify(PLAYER_ACHIEVEMENTS);
+    localStorage.money=playerMoney;
+    localStorage.aviableHeroes=JSON.stringify(aviableHeroes.filter(h=>h.isAvailable).map(h=>h.name));
+}
+
+function loadData(){
+    if(localStorage.achievements){
+        achievements=JSON.parse(localStorage.achievements);
+        PLAYER_ACHIEVEMENTS.firstLevel = achievements.firstLevel;
+        PLAYER_ACHIEVEMENTS.secondLevel = achievements.secondLevel;
+        PLAYER_ACHIEVEMENTS.thirdLevel = achievements.thirdLevel;
+        PLAYER_ACHIEVEMENTS.fourthLevel = achievements.fourthLevel;
+        PLAYER_ACHIEVEMENTS.fifthLevel = achievements.fifthLevel;
+        PLAYER_ACHIEVEMENTS.cemeteryLevel = achievements.cemeteryLevel;
+    }
+    if(localStorage.money) playerMoney=parseInt(localStorage.money);
+    aviableHeroes.forEach(h=>{
+        if(localStorage.aviableHeroes) h.isAvailable=JSON.parse(localStorage.aviableHeroes).includes(h.name);
+    })
+}
+
+const startBtn = document.getElementById('start');
+const continueBtn = document.getElementById('continue');
+startBtn.addEventListener('click', () => {
+    const imagePromises = SOURCES.map(src => {
+        return new Promise((resolve, reject) => {
+          const img = new Image();
+          img.onload = resolve;
+          img.onerror = reject;
+          img.src = src;
+        });
+      });
+      
+    Promise.all(imagePromises)
+    .catch(error => {
+        // Произошла ошибка при загрузке изображений
+        console.error('Ошибка загрузки изображений:', error);
+    })
+    .finally(() => {
+        document.querySelector('div').style.display = 'none';
+        isGameStarted = true;
+    })
+})
+
+continueBtn.addEventListener('click', () => {
+    loadData();
+    const imagePromises = SOURCES.map(src => {
+        return new Promise((resolve, reject) => {
+          const img = new Image();
+          img.onload = resolve;
+          img.onerror = reject;
+          img.src = src;
+        });
+      });
+      
+    Promise.all(imagePromises)
+    .catch(error => {
+        // Произошла ошибка при загрузке изображений
+        console.error('Ошибка загрузки изображений:', error);
+    })
+    .finally(() => {
+        loadData();
+        document.querySelector('div').style.display = 'none';
+        isGameStarted = true;
+    })
+})

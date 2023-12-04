@@ -1,5 +1,11 @@
 body{
     overflow: hidden;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100vw;
+    height: 100vh;
 }
 canvas{
     position: absolute;
@@ -23,4 +29,41 @@ canvas{
 @font-face {
     font-family: 'pixel';
     src: url('../pixelcyr_normal.ttf');
+}
+
+div{
+    background: linear-gradient(to right, #F5DEB3, #FFDAB9);
+    z-index: 999;
+    position: relative;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+div button{
+    background: rgba(0,0,0,0.5);
+    height: 80px;
+    font-family: 'pixel';
+    font-size: 3rem;
+    transition: all 0.2s;
+    color: wheat;
+}
+
+div button:hover{
+    scale: 0.8;
+}
+
+#title{
+    font-family: 'pixel';
+    font-size: 5rem;
+    text-transform: uppercase;
+}
+
+section{
+    display: flex;
+    gap: 10px;
 }
