@@ -73,10 +73,12 @@ class Entity{
                 heroes[this.chosenEnemy].current.anim=heroes[this.chosenEnemy].anims.hit;
             }
             else{
-                enemies[this.chosenEnemy].current.health-=this.damage;
-                enemHp = enemies[this.chosenEnemy].current.health;
-                enemies[this.chosenEnemy].current.img=enemies[this.chosenEnemy].hit;
-                enemies[this.chosenEnemy].current.anim=enemies[this.chosenEnemy].anims.hit;
+                if(enemies[this.chosenEnemy].current){
+                    enemies[this.chosenEnemy].current.health-=this.damage;
+                    enemHp = enemies[this.chosenEnemy].current.health;
+                    enemies[this.chosenEnemy].current.img=enemies[this.chosenEnemy].hit;
+                    enemies[this.chosenEnemy].current.anim=enemies[this.chosenEnemy].anims.hit;
+                }
             }
             this.damaged+=this.damage;}
             if(this.animTimeAttack.cur==0 || enemHp<=0){
@@ -239,6 +241,9 @@ class Entity{
             this.extraDamage=0;
             if(this.current.health<=0){
                     this.current.animX=0;
+                    if(this.enemy && enemies.length === 1 && !moveAtEndParams.active){
+                        moveAtEnd(true);
+                    }
                     // if(this.enemy){
                     //     playerMoney+=enemies[this.chosenEnemy]?.cost || 0; changeMoney(enemies[this.chosenEnemy]?.cost || 0, true);
                     // }
@@ -340,6 +345,7 @@ class EntityMenu extends Entity{
         this.icon = new Image();
         this.icon.src=`${dirImages}/${this.name}/icon.png`;
         this.showParams=false;
+        this.isAvailable=false;
     }
     isHover(){
         return super.isHover()&&gameState===0;
@@ -458,27 +464,53 @@ const PLAYER_ACHIEVEMENTS={
     firstLevel: {
         isCompleted: false,
         state: 0,
-        roadColor: '#8F9779'
+        roadColor: '#8F9779',
+        onComplete: () => {
+            eyeMenu.isAvailable = true;
+            mushroomMenu.isAvailable = true;
+        }
     },
     secondLevel: {
         isCompleted: false,
         state: 0,
-        roadColor: '#6495ED'
+        roadColor: '#6495ED',
+        onComplete: () => {
+            warrior21Menu.isAvailable = true;
+        }
+    },
+    cemeteryLevel: {
+        isCompleted: false,
+        state: 0,
+        roadColor: '#5E347F',
+        onComplete: () => {
+            skeletonMenu.isAvailable = true;
+            archerMenu.isAvailable = true;
+        }
     },
     thirdLevel: {
         isCompleted: false,
         state: 0,
-        roadColor: '#8B4513'
+        roadColor: '#AF8D60',
+        onComplete: () => {
+            evilWizard1Menu.isAvailable = true;
+            evilWizard2Menu.isAvailable = true;
+        }
     },
     fourthLevel: {
         isCompleted: false,
         state: 0,
-        roadColor: '#8B4513'
+        roadColor: '#FF632B',
+        onComplete: () => {
+            medievalKingMenu.isAvailable = true;
+        }
     },
     fifthLevel: {
         isCompleted: false,
         state: 0,
-        roadColor: '#8B4513'
+        roadColor: '#CC5D39',
+        onComplete: () => {
+            
+        }
     }
 }
 
@@ -494,6 +526,14 @@ const Appereances={
     purple:{
         back: generateImage("appearance", "purple-back"),
         front: generateImage("appearance", "purple-front")
+    },
+    green:{
+        back: generateImage("appearance", "green-back"),
+        front: generateImage("appearance", "green-front")
+    },
+    red:{
+        back: generateImage("appearance", "red-back"),
+        front: generateImage("appearance", "red-front")
     },
     sizes:{
         width: 400,
@@ -538,7 +578,7 @@ window.addEventListener('resize', ()=>{
 const money = new Image(), sword = new Image(), heart = new Image(), bgParams = new Image(),
 bgMenu = new Image(), circle = new Image(), caveSnowBegin = new Image(), grassMiddle = new Image(), caveSnowEnd = new Image(), caveSnowMiddle = new Image(),
 grassBegin = new Image(), grassEnd = new Image(), magmaMiddle = new Image(), healthBar={bg:new Image(), colour: new Image(), yellow: new Image()},
-pointer = new Image(), custleEnd = new Image(), mountainPeak = new Image(),
+pointer = new Image(), custleEnd = new Image(), mountainPeak = new Image(), cemeteryMiddle = new Image(),
 healthBarBoss={bg:new Image(), colour: new Image(), yellow: new Image()},
 
 
@@ -573,6 +613,7 @@ grassEnd.src=`${dirImages}/grassEnd.png`;grassBegin.src=`${dirImages}/grassBegin
 caveSnowMiddle.src=`${dirImages}/CaveSnow4.png`;caveSnowEnd.src=`${dirImages}/CaveSnow3.png`;
 custleEnd.src=`${dirImages}/custleBegin.png`;
 mountainPeak.src=`${dirImages}/mountainPeakMiddle.png`;
+cemeteryMiddle.src=`${dirImages}/cemeteryMiddle.png`;
 magmaMiddle.src=`${dirImages}/magmaMiddle.png`;
 healthBar.bg.src=`${dirImages}/healthBarBg.png`;
 healthBar.colour.src=`${dirImages}/healthBarColour.png`;
@@ -594,7 +635,6 @@ firstLevels= new Btn({x:canvas.width*0.05,y:canvas.height*0.1},{width: canvas.wi
     gameBgLevel="#1A600A";
     curLevelAchievment = PLAYER_ACHIEVEMENTS.firstLevel;
     loadFirst();
-    
 });}),
 secondLevels = new Btn({x:canvas.width*0.2,y:canvas.height*0.1},{width: canvas.width*0.15,height:canvas.height*0.2/DRAWN_SIZE_RATIO},'Зимний лес',{bg:'#8BD0E5 ',text:'white', bottom: '#708090',hover:'#4DA6FF'},{name: 'pixel', size: canvas.width*0.05},()=>{if(!PLAYER_ACHIEVEMENTS.firstLevel.isCompleted) return;if(!transitionParams.active)transition(true, ()=>{
     changeMoneyParams.time=0;
@@ -606,7 +646,18 @@ secondLevels = new Btn({x:canvas.width*0.2,y:canvas.height*0.1},{width: canvas.w
     curLevelAchievment = PLAYER_ACHIEVEMENTS.secondLevel;
     loadFirst();
 });}),
-thirdLevels = new Btn({x:canvas.width*0.15,y:canvas.height*0.4},{width: canvas.width*0.25,height:canvas.height*0.2/DRAWN_SIZE_RATIO},'Подножие вуклана',{bg:'#D2B48C',text:'white', bottom: '#895838',hover:'#CD853F '},{name: 'pixel', size: canvas.width*0.05},()=>{if(!PLAYER_ACHIEVEMENTS.secondLevel.isCompleted) return;if(!transitionParams.active)transition(true, ()=>{
+cemeteryLevels = new Btn({x:canvas.width*0.15,y:canvas.height*0.4},{width: canvas.width*0.25,height:canvas.height*0.2/DRAWN_SIZE_RATIO},'Мрачный город',{bg:'#4B0082',text:'white', bottom: '#404040',hover:'#8B0000 '},{name: 'pixel', size: canvas.width*0.05},()=>{if(!PLAYER_ACHIEVEMENTS.secondLevel.isCompleted) return;if(!transitionParams.active)transition(true, ()=>{
+    changeMoneyParams.time=0;
+    changeMoney();
+    levels=cemeteryLevel;
+    gameState=1;
+    gameClrLevel="#803780";
+    gameBgLevel="#110026";
+    colorUI="white";
+    curLevelAchievment = PLAYER_ACHIEVEMENTS.cemeteryLevel;
+    loadFirst();
+});}),
+thirdLevels = new Btn({x:canvas.width*0.45,y:canvas.height*0.4},{width: canvas.width*0.25,height:canvas.height*0.2/DRAWN_SIZE_RATIO},'Подножие вуклана',{bg:'#D2B48C',text:'white', bottom: '#895838',hover:'#CD853F '},{name: 'pixel', size: canvas.width*0.05},()=>{if(!PLAYER_ACHIEVEMENTS.cemeteryLevel.isCompleted) return;if(!transitionParams.active)transition(true, ()=>{
     changeMoneyParams.time=0;
     changeMoney();
     levels=thirdLevel;
@@ -617,7 +668,7 @@ thirdLevels = new Btn({x:canvas.width*0.15,y:canvas.height*0.4},{width: canvas.w
     curLevelAchievment = PLAYER_ACHIEVEMENTS.thirdLevel;
     loadFirst();
 });}),
-fourthLevels = new Btn({x:canvas.width*0.55,y:canvas.height*0.4},{width: canvas.width*0.15,height:canvas.height*0.2/DRAWN_SIZE_RATIO},'Вулкан',{bg:'#FF4500 ',text:'white', bottom: '#8B0000',hover:'#FF5D00'},{name: 'pixel', size: canvas.width*0.05},()=>{if(!PLAYER_ACHIEVEMENTS.thirdLevel.isCompleted) return;if(!transitionParams.active)transition(true, ()=>{
+fourthLevels = new Btn({x:canvas.width*0.75,y:canvas.height*0.4},{width: canvas.width*0.15,height:canvas.height*0.2/DRAWN_SIZE_RATIO},'Вулкан',{bg:'#FF4500 ',text:'white', bottom: '#8B0000',hover:'#FF5D00'},{name: 'pixel', size: canvas.width*0.05},()=>{if(!PLAYER_ACHIEVEMENTS.thirdLevel.isCompleted) return;if(!transitionParams.active)transition(true, ()=>{
     changeMoneyParams.time=0;
     changeMoney();
     levels=fourthLevel;
@@ -628,7 +679,7 @@ fourthLevels = new Btn({x:canvas.width*0.55,y:canvas.height*0.4},{width: canvas.
     curLevelAchievment = PLAYER_ACHIEVEMENTS.fourthLevel;
     loadFirst();
 });}),
-fivthLevels = new Btn({x:canvas.width*0.45,y:canvas.height*0.1},{width: canvas.width*0.2,height:canvas.height*0.2/DRAWN_SIZE_RATIO},'Горные вершины',{bg:'#B0C4DE ',text:'white', bottom: '#A9A9A9',hover:'#4682B4'},{name: 'pixel', size: canvas.width*0.05},()=>{if(!PLAYER_ACHIEVEMENTS.fourthLevel.isCompleted) return;if(!transitionParams.active)transition(true, ()=>{
+fivthLevels = new Btn({x:canvas.width*0.725,y:canvas.height*0.1},{width: canvas.width*0.2,height:canvas.height*0.2/DRAWN_SIZE_RATIO},'Горные вершины',{bg:'#B0C4DE ',text:'white', bottom: '#A9A9A9',hover:'#4682B4'},{name: 'pixel', size: canvas.width*0.05},()=>{if(!PLAYER_ACHIEVEMENTS.fourthLevel.isCompleted) return;if(!transitionParams.active)transition(true, ()=>{
     changeMoneyParams.time=0;
     changeMoney();
     levels=fivthLevel;
@@ -666,21 +717,36 @@ menuPoses=[
 
 
 const
-evilWizard1={damage: 2, maxHp: 200, cost: 20, countAttack: 1, critChance: 10, typeAppereance: 'purple'},
-evilWizard2={damage: 2, maxHp: 50, cost: 10, countAttack: 2, critChance: 5, typeAppereance: 'blue'},
+// evilWizard1={damage: 2, maxHp: 200, cost: 20, countAttack: 1, critChance: 10, typeAppereance: 'purple'},
+// evilWizard2={damage: 2, maxHp: 50, cost: 10, countAttack: 2, critChance: 5, typeAppereance: 'blue'},
+// girl1={damage: 1, maxHp: 70, cost: 5,countAttack:1, critChance: 15, typeAppereance: 'blue'},
+// medievalKing={damage: 1, maxHp: 300, cost: 40, countAttack: 2, critChance: 40, typeAppereance: 'yellow'},
+// eye = {damage: 1, maxHp: 26, cost: 10, countAttack: 2, critChance: 8, typeAppereance: 'blue'},
+// skeleton = {countAttack: 2, damage: 1, cost: 20, maxHp: 144, critChance: 30, typeAppereance: 'blue'},
+// goblin = {countAttack:2,damage: 1, cost: 25, maxHp:90, critChance: 5, typeAppereance: 'blue'},
+// mushroom = {countAttack: 2, damage: 1.5, cost: 30, maxHp: 100, critChance: 5, typeAppereance: 'blue'},
+// warrior = {countAttack: 3, damage: 2, cost: 0, maxHp: 300, critChance: 60, typeAppereance: 'yellow'},
+// warrior2 = {countAttack: 3, damage: 4, cost: 50, maxHp: 600, critChance: 60, typeAppereance: 'yellow'},
+// warrior3 = {countAttack: 3, damage: 4, cost: 0, maxHp: 700, critChance: 60, typeAppereance: 'yellow'},
+// archer={countAttack: 1, damage: 3, cost: 1, maxHp: 700, critChance: 99, typeAppereance: 'blue'},
+// warrior21 = {countAttack: 2, damage: 3, cost: 35, maxHp: 100, critChance: 25, typeAppereance: 'blue'},
+// hero = {countAttack: 2, damage: 3, cost: 35, maxHp: 500, critChance: 100, typeAppereance: 'yellow'},
+
+evilWizard1={damage: 3, maxHp: 160, cost: 20, countAttack: 1, critChance: 10, typeAppereance: 'red'},
+evilWizard2={damage: 2, maxHp: 110, cost: 15, countAttack: 2, critChance: 5, typeAppereance: 'purple'},
 girl1={damage: 1, maxHp: 70, cost: 5,countAttack:1, critChance: 15, typeAppereance: 'blue'},
-medievalKing={damage: 1, maxHp: 300, cost: 40, countAttack: 2, critChance: 40, typeAppereance: 'yellow'},
-eye = {damage: 1, maxHp: 26, cost: 10, countAttack: 2, critChance: 8, typeAppereance: 'blue'},
-skeleton = {countAttack: 2, damage: 1, cost: 20, maxHp: 144, critChance: 30, typeAppereance: 'blue'},
-goblin = {countAttack:2,damage: 1, cost: 25, maxHp:90, critChance: 5, typeAppereance: 'blue'},
-mushroom = {countAttack: 2, damage: 1.5, cost: 30, maxHp: 100, critChance: 5, typeAppereance: 'blue'},
-warrior = {countAttack: 3, damage: 2, cost: 0, maxHp: 300, critChance: 60, typeAppereance: 'yellow'},
+medievalKing={damage: 7, maxHp: 250, cost: 40, countAttack: 2, critChance: 40, typeAppereance: 'yellow'},
+eye = {damage: 2, maxHp: 100, cost: 7, countAttack: 2, critChance: 8, typeAppereance: 'blue'},
+skeleton = {countAttack: 2, damage: 3, cost: 28, maxHp: 130, critChance: 30, typeAppereance: 'purple'},
+goblin = {countAttack:2,damage: 1.5, cost: 5, maxHp:80, critChance: 5, typeAppereance: 'blue'},
+mushroom = {countAttack: 2, damage: 1.5, cost: 6, maxHp: 100, critChance: 5, typeAppereance: 'blue'},
+warrior = {countAttack: 3, damage: 2, cost: 20, maxHp: 400, critChance: 60, typeAppereance: 'yellow'},
 warrior2 = {countAttack: 3, damage: 4, cost: 50, maxHp: 600, critChance: 60, typeAppereance: 'yellow'},
 warrior3 = {countAttack: 3, damage: 4, cost: 0, maxHp: 700, critChance: 60, typeAppereance: 'yellow'},
-archer={countAttack: 1, damage: 3, cost: 1, maxHp: 700, critChance: 99, typeAppereance: 'blue'},
-warrior21 = {countAttack: 2, damage: 3, cost: 35, maxHp: 100, critChance: 25, typeAppereance: 'blue'},
-hero = {countAttack: 2, damage: 3, cost: 35, maxHp: 500, critChance: 100, typeAppereance: 'yellow'},
-
+archer={countAttack: 1, damage: 4, cost: 30, maxHp: 140, critChance: 50, typeAppereance: 'green'},
+warrior21 = {countAttack: 2, damage: 6, cost: 35, maxHp: 100, critChance: 25, typeAppereance: 'purple'},
+hero = {countAttack: 2, damage: 2, cost: 200, maxHp: 1600, critChance: 50, typeAppereance: 'yellow'},
+ 
 evilWizard1Obj = new Entity('evil wizard', 150, evilWizard1,enemiesPos[1], true),
 evilGirl1Obj=new Entity('girl 1', 80, girl1,enemiesPos[2],true),
 evilWizard2Obj = new Entity('evil wizard 2',250,evilWizard2,undefined,true),
@@ -695,39 +761,44 @@ warrior2Obj = new Entity('warrior', 162, warrior2,undefined, true, 1),
 warrior3Obj = new Entity('warrior', 162, warrior3,undefined, true, 1),
 warrior21Obj = new Entity('warrior2', 135, warrior21, undefined, true),
 heroObj = new Entity('hero', 200, hero, undefined, true, 1),
-// archerObj = new Entity('archer', 128, archer, undefined),
+archerObj = new Entity('archer', 128, archer, undefined, 1),
 
 girl1Menu = new EntityMenu(5,girl,'girl 1', 80, girl1,menuPoses[0]),
-evilWizard1Menu = new EntityMenu(10, new Entity('evil wizard 2', 250, evilWizard2), 'evil wizard 2', 250, evilWizard2, menuPoses[1]),
-evilWizard2Menu = new EntityMenu(15, new Entity('evil wizard', 150, evilWizard1),'evil wizard', 150, evilWizard1, menuPoses[2],true),
-medievalKingMenu = new EntityMenu(13,new Entity('medieval king', 160,medievalKing) ,'medieval king',160,medievalKing,menuPoses[3]),
-eyeMenu = new EntityMenu(0,new Entity('Flying eye',150,eye),'Flying eye',150,eye,menuPoses[4],true),
-skeletonMenu = new EntityMenu(6,new Entity('Skeleton',150,skeleton),'Skeleton',150,skeleton,menuPoses[5]),
-goblinMenu = new EntityMenu(10,new Entity('Goblin',150,goblin),'Goblin',150,goblin,menuPoses[6],true),
-mushroomMenu = new EntityMenu(15, new Entity('Mushroom',150,mushroom),'Mushroom',150,mushroom,menuPoses[7]),
-warrior21Menu = new EntityMenu(15, new Entity('warrior2', 135, warrior21),'warrior2', 135, warrior21, menuPoses[8]);
-// archerMenu = new EntityMenu(5, new Entity('archer', 128, archer), 'archer', 128, archer, menuPoses[0]);
+evilWizard1Menu = new EntityMenu(18, new Entity('evil wizard 2', 250, evilWizard2), 'evil wizard 2', 250, evilWizard2, menuPoses[0]),
+evilWizard2Menu = new EntityMenu(30, new Entity('evil wizard', 150, evilWizard1),'evil wizard', 150, evilWizard1, menuPoses[2],true),
+medievalKingMenu = new EntityMenu(80,new Entity('medieval king', 160,medievalKing) ,'medieval king',160,medievalKing,menuPoses[3]),
+eyeMenu = new EntityMenu(7,new Entity('Flying eye',150,eye),'Flying eye',150,eye,menuPoses[6],true),
+skeletonMenu = new EntityMenu(20,new Entity('Skeleton',150,skeleton),'Skeleton',150,skeleton,menuPoses[4], true),
+goblinMenu = new EntityMenu(2,new Entity('Goblin',150,goblin),'Goblin',150,goblin,menuPoses[1]),
+mushroomMenu = new EntityMenu(6, new Entity('Mushroom',150,mushroom),'Mushroom',150,mushroom,menuPoses[5]),
+warrior21Menu = new EntityMenu(16, new Entity('warrior2', 135, warrior21),'warrior2', 135, warrior21, menuPoses[8]);
+const archerMenu = new EntityMenu(20, new Entity('archer', 128, archer), 'archer', 128, archer, menuPoses[7]);
+goblinMenu.isAvailable = true;
 
 var gameBgLevel, gameClrLevel, colorUI="black";
 var firstLevel=[{enemies: [{obj: goblinObj, pos: 3}], bg: grassBegin},
-{enemies:[{obj: goblinObj, pos: 2}, {obj: goblinObj, pos: 3}, {obj: goblinObj, pos: 5}], bg: grassMiddle},
-{enemies:[{obj: mushroomObj, pos: 2}, {obj: goblinObj, pos: 3}, {obj: mushroomObj, pos: 4}, {obj: goblinObj, pos: 5}], bg: grassMiddle},
-{enemies:[{obj: mushroomObj, pos: 1}, {obj: mushroomObj, pos: 2}, {obj: goblinObj, pos: 3}, {obj: mushroomObj, pos: 4}, {obj: mushroomObj, pos: 5}], bg: grassMiddle},
-{enemies:[{obj: warriorObj, pos: 3}], bg: grassEnd}],
-secondLevel=[{enemies: [{obj: warrior21Obj, pos: 3},], bg: caveSnowBegin},
-{enemies:[{obj: warrior21Obj, pos: 2}, {obj: kingObj, pos: 3}, {obj: warrior21Obj, pos: 5}], bg: caveSnowMiddle},
-{enemies:[{obj: kingObj, pos: 4},{obj: warrior21Obj, pos: 5},{obj: kingObj, pos: 2},{obj: warrior21Obj, pos: 1}],bg: caveSnowMiddle},
-{enemies:[{obj: kingObj, pos: 5}, {obj: kingObj, pos: 1}, {obj: kingObj, pos: 3}],bg: caveSnowMiddle},
-{enemies:[{obj: heroObj, pos: 3}], bg: caveSnowEnd}],
+{enemies:[{obj: goblinObj, pos: 2}, {obj: mushroomObj, pos: 3}, {obj: goblinObj, pos: 5}], bg: grassMiddle},
+{enemies:[{obj: mushroomObj, pos: 2}, {obj: mushroomObj, pos: 3}, {obj: eyeObj, pos: 4}], bg: grassMiddle},
+{enemies:[{obj: eyeObj, pos: 1}, {obj: eyeObj, pos: 2}, {obj: eyeObj, pos: 3}], bg: grassEnd}],
+secondLevel=[{enemies: [{obj: goblinObj, pos: 3}, {obj: eyeObj, pos: 4},], bg: caveSnowBegin},
+{enemies:[{obj: mushroomObj, pos: 2}, {obj: eyeObj, pos: 3}, ], bg: caveSnowMiddle},
+{enemies:[{obj: warrior21Obj, pos: 4},{obj: mushroomObj, pos: 5},{obj: eyeObj, pos: 2},{obj: mushroomObj, pos: 1}],bg: caveSnowMiddle},
+{enemies:[{obj: warriorObj, pos: 3}],bg: caveSnowEnd},],
+cemeteryLevel=[
+    {enemies: [{obj: goblinObj, pos: 3}, {obj: eyeObj, pos: 4}], bg: cemeteryMiddle},
+    {enemies: [{obj: skeletonObj, pos: 3}, {obj: archerObj, pos: 4}, {obj: mushroomObj, pos: 5}, {obj: archerObj, pos: 1}], bg: cemeteryMiddle},
+    {enemies: [{obj: skeletonObj, pos: 1}, {obj: archerObj, pos: 4}, {obj: eyeObj, pos: 3}], bg: cemeteryMiddle},
+    {enemies: [{obj: archerObj, pos: 1}, {obj: skeletonObj, pos: 4}, {obj: skeletonObj, pos: 3}], bg: cemeteryMiddle},
+],
 thirdLevel=[{enemies: [{obj: evilWizard2Obj, pos: 1}, {obj: evilWizard2Obj, pos: 4}], bg: magmaMiddle},
-{enemies:[{obj: evilWizard2Obj, pos: 1}, {obj: evilWizard2Obj, pos: 4}, {obj: evilWizard2Obj, pos: 3}], bg: magmaMiddle},
-{enemies:[{obj: evilWizard2Obj, pos: 1}, {obj: evilWizard1Obj, pos: 2}, {obj: evilWizard2Obj, pos: 4}, {obj: evilWizard1Obj, pos: 5}], bg: magmaMiddle},
-{enemies:[{obj: warrior3Obj, pos: 3}], bg: magmaMiddle}],
+{enemies:[{obj: evilWizard2Obj, pos: 1}, {obj: evilWizard1Obj, pos: 4}, {obj: evilWizard2Obj, pos: 3}], bg: magmaMiddle},
+{enemies:[{obj: evilWizard1Obj, pos: 1}, {obj: evilWizard1Obj, pos: 2}, {obj: evilWizard2Obj, pos: 4}, {obj: evilWizard2Obj, pos: 5}], bg: magmaMiddle},
+{enemies:[{obj: evilWizard1Obj, pos: 3}, {obj: evilWizard1Obj, pos: 5}, {obj: evilWizard1Obj, pos: 2}, {obj: evilWizard2Obj, pos: 1}], bg: magmaMiddle}],
 fourthLevel=[{enemies: [{obj: heroObj, pos: 3},], bg: custleEnd},],
 fivthLevel=[
-    {enemies: [{obj: mushroomObj, pos: 2}, {obj: mushroomObj, pos: 4}, {obj: kingObj, pos: 5}], bg: mountainPeak},
-    {enemies: [{obj: goblinObj, pos: 2}, {obj: mushroomObj, pos: 3}, {obj: goblinObj, pos: 4}, {obj: evilWizard2Obj, pos: 5}, {obj: evilWizard2Obj, pos: 1}], bg: mountainPeak},
-    {enemies: [{obj: kingObj, pos: 1}, {obj: mushroomObj, pos: 2},  {obj: evilWizard2Obj, pos: 3}, {obj: evilWizard1Obj, pos: 4}, {obj: eyeObj, pos: 5}], bg: mountainPeak},
+    {enemies: [{obj: mushroomObj, pos: 2}, {obj: mushroomObj, pos: 4}, {obj: kingObj, pos: 5}, {obj: evilWizard2Obj, pos: 3}], bg: mountainPeak},
+    {enemies: [{obj: goblinObj, pos: 2}, {obj: evilWizard1Obj, pos: 3}, {obj: goblinObj, pos: 4}, {obj: evilWizard2Obj, pos: 5}, {obj: evilWizard2Obj, pos: 1}], bg: mountainPeak},
+    {enemies: [{obj: kingObj, pos: 1}, {obj: skeletonObj, pos: 2},  {obj: evilWizard2Obj, pos: 3}, {obj: evilWizard1Obj, pos: 4}, {obj: eyeObj, pos: 5}], bg: mountainPeak},
     {enemies: [{obj: warrior2Obj, pos: 3}], bg: mountainPeak},
 ],
 levels = [],
@@ -736,8 +807,8 @@ curHeroes = [],curLevel = 0,heroes = [], enemies=[], playerMove=true,chosen = 0,
 drawnHeroes = [],
 
 
-aviableLevels=[firstLevels,secondLevels, thirdLevels, fourthLevels, fivthLevels],
-aviableHeroes=[evilWizard1Menu, evilWizard2Menu,medievalKingMenu,eyeMenu,skeletonMenu,goblinMenu,mushroomMenu, warrior21Menu];
+aviableLevels=[firstLevels,secondLevels, cemeteryLevels,thirdLevels, fourthLevels, fivthLevels],
+aviableHeroes=[evilWizard1Menu, evilWizard2Menu,medievalKingMenu,eyeMenu,skeletonMenu,goblinMenu,mushroomMenu, warrior21Menu, archerMenu];
 animate();
 window.addEventListener('mousemove', e=>{
         mouse.x=e.clientX;
@@ -767,8 +838,9 @@ function renderGame(deltaTime){
             heroes[chosen].attackEnemy(e.pos, i);
         }
         if(e.die) {
-            if(e.isBoss){
+            if(e.isBoss || (enemies.length === 1 && curLevel === levels.length - 1)){
                 curLevelAchievment.isCompleted = true;
+                curLevelAchievment.onComplete();
             }
             if(e.cost > 0){
                 playerMoney+=enemies[i].cost; 
@@ -836,8 +908,13 @@ function renderMenu(deltaTime){
     c.fillRect(0,0,canvas.width,canvas.height);
     c.drawImage(bgMenu, 0,0,bgMenu.width,bgMenu.height,0,0,canvas.width,canvas.height);
     drawHeroes();
-    aviableHeroes.forEach(h=>{h.draw(deltaTime);});
-    aviableHeroes.forEach(h=>{if(h.isHover())h.hover();});
+    aviableHeroes.forEach(h=>{
+        if(!h.isAvailable)
+        c.filter = 'brightness(0)';
+        h.draw(deltaTime);
+        c.filter = 'brightness(1)';
+    });
+    aviableHeroes.forEach(h=>{if(!h.isAvailable) return;if(h.isHover())h.hover();});
     c.font=`50px pixel`;
     c.textAlign='left';
     c.textBaseline='top';
@@ -905,8 +982,8 @@ function loadLevel(num){
     enemies.sort(function(a,b){return a.pos.y - b.pos.y;})
     curLevel=num;
     if(num > 0){
-        playerMoney+=num*10;
-        changeMoney(num*10, true);
+        playerMoney+=num*2;
+        changeMoney(num*2, true);
     }
     if(num/levels.length>curLevelAchievment.state){
         curLevelAchievment.state = num/levels.length;
@@ -945,6 +1022,7 @@ function startGame(){
 function endGame(){
         if(!transitionParams.active)
         transition(true,()=>{
+        if(playerMoney < 2) playerMoney = 2;
         gameState=0;
         curHeroes=[];
         opacity=[];
