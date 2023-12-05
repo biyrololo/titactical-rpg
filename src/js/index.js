@@ -1,8 +1,6 @@
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent); 
 const DRAWN_SIZE_RATIO = isMobile ? 0.8 : 1;
 
-var isGameStarted = false;
-
 class Entity{
     constructor(name, size, anims,pos={x:0,y:0}, enemy=false, isBoss=false){
         this.secondAttack=false;
@@ -329,6 +327,7 @@ class Entity{
         this.attacked.fromPos=this.pos;
         this.current.img=this.move;
         this.current.anim=this.anims.move;
+        this.current.animX=0;
     }
     attackHero(){
         this.attacked.to=true;
@@ -341,6 +340,7 @@ class Entity{
         this.attacked.fromPos=this.pos;
         this.current.img=this.move;
         this.current.anim=this.anims.move;
+        this.current.animX=0;
     }
 }
 class EntityMenu extends Entity{
@@ -573,7 +573,7 @@ canvas.width=window.innerWidth;
 canvas.height=window.innerHeight;
 var wdithHealthBoss = canvas.width*0.6, 
 heightHealthBoss = wdithHealthBoss*11/(332);
-var playerMoney=3, gameState = 0, opacity=[];
+var playerMoney=4, gameState = 0, opacity=[];
 const attacks={'Goblin':{
     2:15
 },'Mushroom':{1:5},'medieval king':{2:15}, 'girl 1':{1:5}
@@ -760,20 +760,20 @@ const
 // warrior21 = {countAttack: 2, damage: 3, cost: 35, maxHp: 100, critChance: 25, typeAppereance: 'blue'},
 // hero = {countAttack: 2, damage: 3, cost: 35, maxHp: 500, critChance: 100, typeAppereance: 'yellow'},
 
-evilWizard1={damage: 3, maxHp: 160, cost: 20, countAttack: 1, critChance: 10, typeAppereance: 'red'},
-evilWizard2={damage: 2, maxHp: 110, cost: 15, countAttack: 2, critChance: 5, typeAppereance: 'purple'},
+evilWizard1={damage: 3, maxHp: 160, cost: 8, countAttack: 1, critChance: 10, typeAppereance: 'red'},
+evilWizard2={damage: 2, maxHp: 110, cost: 6, countAttack: 2, critChance: 5, typeAppereance: 'purple'},
 girl1={damage: 1, maxHp: 70, cost: 5,countAttack:1, critChance: 15, typeAppereance: 'blue'},
-medievalKing={damage: 7, maxHp: 250, cost: 40, countAttack: 2, critChance: 40, typeAppereance: 'yellow'},
-eye = {damage: 2, maxHp: 100, cost: 7, countAttack: 2, critChance: 8, typeAppereance: 'blue'},
-skeleton = {countAttack: 2, damage: 3, cost: 28, maxHp: 130, critChance: 30, typeAppereance: 'purple'},
-goblin = {countAttack:2,damage: 1.5, cost: 5, maxHp:80, critChance: 5, typeAppereance: 'blue'},
-mushroom = {countAttack: 2, damage: 1.5, cost: 6, maxHp: 100, critChance: 5, typeAppereance: 'blue'},
-warrior = {countAttack: 3, damage: 2, cost: 20, maxHp: 400, critChance: 60, typeAppereance: 'yellow'},
-warrior2 = {countAttack: 3, damage: 4, cost: 50, maxHp: 600, critChance: 60, typeAppereance: 'yellow'},
-warrior3 = {countAttack: 3, damage: 4, cost: 0, maxHp: 700, critChance: 60, typeAppereance: 'yellow'},
-archer={countAttack: 1, damage: 4, cost: 30, maxHp: 140, critChance: 50, typeAppereance: 'green'},
-warrior21 = {countAttack: 2, damage: 6, cost: 35, maxHp: 100, critChance: 25, typeAppereance: 'purple'},
-hero = {countAttack: 2, damage: 2, cost: 200, maxHp: 1600, critChance: 50, typeAppereance: 'yellow'},
+medievalKing={damage: 7, maxHp: 250, cost: 20, countAttack: 2, critChance: 40, typeAppereance: 'yellow'},
+eye = {damage: 2, maxHp: 100, cost: 2, countAttack: 2, critChance: 8, typeAppereance: 'blue'},
+skeleton = {countAttack: 2, damage: 3, cost: 8, maxHp: 130, critChance: 30, typeAppereance: 'purple'},
+goblin = {countAttack:2,damage: 1.5, cost: 2, maxHp:80, critChance: 5, typeAppereance: 'blue'},
+mushroom = {countAttack: 2, damage: 1.5, cost: 3, maxHp: 100, critChance: 5, typeAppereance: 'blue'},
+warrior = {countAttack: 3, damage: 2, cost: 10, maxHp: 400, critChance: 60, typeAppereance: 'yellow'},
+warrior2 = {countAttack: 3, damage: 4, cost: 25, maxHp: 600, critChance: 60, typeAppereance: 'yellow'},
+warrior3 = {countAttack: 3, damage: 4, cost: 50, maxHp: 700, critChance: 60, typeAppereance: 'yellow'},
+archer={countAttack: 1, damage: 4, cost: 10, maxHp: 140, critChance: 50, typeAppereance: 'green'},
+warrior21 = {countAttack: 2, damage: 6, cost: 11, maxHp: 100, critChance: 25, typeAppereance: 'purple'},
+hero = {countAttack: 2, damage: 2, cost: 100, maxHp: 1600, critChance: 50, typeAppereance: 'yellow'},
  
 evilWizard1Obj = new Entity('evil wizard', 150, evilWizard1,enemiesPos[1], true),
 evilGirl1Obj=new Entity('girl 1', 80, girl1,enemiesPos[2],true),
@@ -822,19 +822,19 @@ secondLevel=[{enemies: [{obj: goblinObj, pos: 3}, {obj: eyeObj, pos: 4},], bg: c
 {enemies:[{obj: warrior21Obj, pos: 4},{obj: mushroomObj, pos: 5},{obj: eyeObj, pos: 2},{obj: mushroomObj, pos: 1}],bg: caveSnowMiddle},
 {enemies:[{obj: warriorObj, pos: 3}],bg: caveSnowEnd},],
 cemeteryLevel=[
-    {enemies: [{obj: goblinObj, pos: 3}, {obj: eyeObj, pos: 4}], bg: cemeteryMiddle},
-    {enemies: [{obj: skeletonObj, pos: 3}, {obj: archerObj, pos: 4}, {obj: mushroomObj, pos: 5}, {obj: archerObj, pos: 1}], bg: cemeteryMiddle},
-    {enemies: [{obj: skeletonObj, pos: 1}, {obj: archerObj, pos: 4}, {obj: eyeObj, pos: 3}], bg: cemeteryMiddle},
-    {enemies: [{obj: archerObj, pos: 1}, {obj: skeletonObj, pos: 4}, {obj: skeletonObj, pos: 3}], bg: cemeteryMiddle},
+    {enemies: [{obj: goblinObj, pos: 3}, {obj: eyeObj, pos: 4}, {obj: warrior21Obj, pos: 1}], bg: cemeteryMiddle},
+    {enemies: [{obj: skeletonObj, pos: 3}, {obj: warrior21Obj, pos: 4}, {obj: mushroomObj, pos: 5}, {obj: archerObj, pos: 1}], bg: cemeteryMiddle},
+    {enemies: [{obj: skeletonObj, pos: 1}, {obj: archerObj, pos: 4}, {obj: eyeObj, pos: 3}, {obj: skeletonObj, pos: 5}], bg: cemeteryMiddle},
+    {enemies: [{obj: archerObj, pos: 1}, {obj: skeletonObj, pos: 4}, {obj: skeletonObj, pos: 3}, {obj: skeletonObj, pos: 2}, {obj: skeletonObj, pos: 5}], bg: cemeteryMiddle},
 ],
 thirdLevel=[{enemies: [{obj: evilWizard2Obj, pos: 1}, {obj: evilWizard2Obj, pos: 4}], bg: magmaMiddle},
 {enemies:[{obj: evilWizard2Obj, pos: 1}, {obj: evilWizard1Obj, pos: 4}, {obj: evilWizard2Obj, pos: 3}], bg: magmaMiddle},
 {enemies:[{obj: evilWizard1Obj, pos: 1}, {obj: evilWizard1Obj, pos: 2}, {obj: evilWizard2Obj, pos: 4}, {obj: evilWizard2Obj, pos: 5}], bg: magmaMiddle},
-{enemies:[{obj: evilWizard1Obj, pos: 3}, {obj: evilWizard1Obj, pos: 5}, {obj: evilWizard1Obj, pos: 2}, {obj: evilWizard2Obj, pos: 1}], bg: magmaMiddle}],
+{enemies:[{obj: evilWizard1Obj, pos: 3}, {obj: evilWizard1Obj, pos: 5}, {obj: evilWizard1Obj, pos: 2}, {obj: evilWizard2Obj, pos: 1}, {obj: evilWizard2Obj, pos: 4}], bg: magmaMiddle}],
 fourthLevel=[{enemies: [{obj: heroObj, pos: 3},], bg: custleEnd},],
 fivthLevel=[
-    {enemies: [{obj: mushroomObj, pos: 2}, {obj: mushroomObj, pos: 4}, {obj: kingObj, pos: 5}, {obj: evilWizard2Obj, pos: 3}], bg: mountainPeak},
-    {enemies: [{obj: goblinObj, pos: 2}, {obj: evilWizard1Obj, pos: 3}, {obj: goblinObj, pos: 4}, {obj: evilWizard2Obj, pos: 5}, {obj: evilWizard2Obj, pos: 1}], bg: mountainPeak},
+    {enemies: [{obj: archerObj, pos: 2}, {obj: mushroomObj, pos: 4}, {obj: kingObj, pos: 5}, {obj: evilWizard2Obj, pos: 3}], bg: mountainPeak},
+    {enemies: [{obj: warrior21Obj, pos: 2}, {obj: evilWizard1Obj, pos: 3}, {obj: goblinObj, pos: 4}, {obj: evilWizard2Obj, pos: 5}, {obj: evilWizard2Obj, pos: 1}], bg: mountainPeak},
     {enemies: [{obj: kingObj, pos: 1}, {obj: skeletonObj, pos: 2},  {obj: evilWizard2Obj, pos: 3}, {obj: evilWizard1Obj, pos: 4}, {obj: eyeObj, pos: 5}], bg: mountainPeak},
     {enemies: [{obj: warrior2Obj, pos: 3}], bg: mountainPeak},
 ],
@@ -846,6 +846,11 @@ drawnHeroes = [],
 
 aviableLevels=[firstLevels,secondLevels, cemeteryLevels,thirdLevels, fourthLevels, fivthLevels],
 aviableHeroes=[evilWizard1Menu, evilWizard2Menu,medievalKingMenu,eyeMenu,skeletonMenu,goblinMenu,mushroomMenu, warrior21Menu, archerMenu];
+
+if(isLoadedDataNeeded){
+    loadData();
+}
+
 animate();
 window.addEventListener('mousemove', e=>{
         mouse.x=e.clientX;
@@ -877,7 +882,13 @@ function renderGame(deltaTime){
         if(e.die) {
             if(e.isBoss || (enemies.length === 1 && curLevel === levels.length - 1)){
                 curLevelAchievment.isCompleted = true;
-                curLevelAchievment.onComplete();
+                if(curLevelAchievment.onComplete)
+                {
+                    curLevelAchievment.onComplete();
+                }
+                else{
+                    console.log(curLevelAchievment)
+                }
             }
             if(e.cost > 0){
                 playerMoney+=enemies[i].cost; 
@@ -956,13 +967,14 @@ function renderMenu(deltaTime){
     c.textAlign='left';
     c.textBaseline='top';
     c.fillStyle='black';
-    c.fillText(playerMoney, 10, 0);
+    const moneyPosY = isMobile?canvas.height*0.95-50:0;
+    c.fillText(playerMoney, 10, moneyPosY);
     if(changeMoneyParams.active){
         c.fillStyle=`rgba(${changeMoneyParams.color},${changeMoneyParams.opacity})`;
-        c.fillText(`${changeMoneyParams.delta>0?'+':''}${changeMoneyParams.delta}`, 10, 50);
+        c.fillText(`${changeMoneyParams.delta>0?'+':''}${changeMoneyParams.delta}`, 10, isMobile?moneyPosY-50:50);
         changeMoney();
     }
-    c.drawImage(money,0,0,102,118,String(playerMoney).length*25+20, 10,50,50);
+    c.drawImage(money,0,0,102,118,String(playerMoney).length*25+20, 10+moneyPosY,50,50);
     //if(aviableHeroes.some(e=>{return e.anims.attack<=0;})) {c.fillText("Loading...", 0, 0); aviableHeroes.forEach(h=>{h.initImages();h.current.img=h.idle;});}
     start.draw();
 }
@@ -996,7 +1008,6 @@ function renderChoosingLevel(){
 }
 function animate(){
     requestAnimationFrame(animate);
-    if(!isGameStarted) return;
     const currentTime = performance.now();
     const deltaTime = (currentTime - prevTime)/1000;
     document.body.style.cursor='';
@@ -1062,7 +1073,7 @@ function endGame(){
         saveData();
         if(!transitionParams.active)
         transition(true,()=>{
-        if(playerMoney < 2) playerMoney = 2;
+        if(playerMoney < 4) playerMoney = 4;
         gameState=0;
         curHeroes=[];
         opacity=[];
@@ -1117,7 +1128,8 @@ function moveAtEnd(start=false){
         moveAtEndParams.dist=0;
         moveAtEndParams.time=moveAtEndParams.maxTime;
         playerMove=false;
-        heroes.forEach(h=>{h.current.img=h.move;h.current.anim=h.anims.move;})
+        heroes.forEach(h=>{h.current.img=h.move;h.current.anim=h.anims.move;
+            h.current.animX=0;})
     }
     else{
         if(moveAtEndParams.time==transitionParams.maxTime) transition(true,()=>{loadLevel(curLevel+1)});
@@ -1170,61 +1182,17 @@ function saveData(){
 function loadData(){
     if(localStorage.achievements){
         achievements=JSON.parse(localStorage.achievements);
-        PLAYER_ACHIEVEMENTS.firstLevel = achievements.firstLevel;
-        PLAYER_ACHIEVEMENTS.secondLevel = achievements.secondLevel;
-        PLAYER_ACHIEVEMENTS.thirdLevel = achievements.thirdLevel;
-        PLAYER_ACHIEVEMENTS.fourthLevel = achievements.fourthLevel;
-        PLAYER_ACHIEVEMENTS.fifthLevel = achievements.fifthLevel;
-        PLAYER_ACHIEVEMENTS.cemeteryLevel = achievements.cemeteryLevel;
+        PLAYER_ACHIEVEMENTS.firstLevel = {...PLAYER_ACHIEVEMENTS.firstLevel, ...achievements.firstLevel};
+        PLAYER_ACHIEVEMENTS.secondLevel = {...PLAYER_ACHIEVEMENTS.secondLevel, ...achievements.secondLevel};
+        PLAYER_ACHIEVEMENTS.thirdLevel = {...PLAYER_ACHIEVEMENTS.thirdLevel, ...achievements.thirdLevel};
+        PLAYER_ACHIEVEMENTS.fourthLevel = {...PLAYER_ACHIEVEMENTS.fourthLevel, ...achievements.fourthLevel};
+        PLAYER_ACHIEVEMENTS.fifthLevel = {...PLAYER_ACHIEVEMENTS.fifthLevel, ...achievements.fifthLevel};
+        PLAYER_ACHIEVEMENTS.cemeteryLevel = {...PLAYER_ACHIEVEMENTS.cemeteryLevel, ...achievements.cemeteryLevel};
     }
     if(localStorage.money) playerMoney=parseInt(localStorage.money);
     aviableHeroes.forEach(h=>{
         if(localStorage.aviableHeroes) h.isAvailable=JSON.parse(localStorage.aviableHeroes).includes(h.name);
     })
+    if(playerMoney < 4) playerMoney = 4;
 }
 
-const startBtn = document.getElementById('start');
-const continueBtn = document.getElementById('continue');
-startBtn.addEventListener('click', () => {
-    const imagePromises = SOURCES.map(src => {
-        return new Promise((resolve, reject) => {
-          const img = new Image();
-          img.onload = resolve;
-          img.onerror = reject;
-          img.src = src;
-        });
-      });
-      
-    Promise.all(imagePromises)
-    .catch(error => {
-        // Произошла ошибка при загрузке изображений
-        console.error('Ошибка загрузки изображений:', error);
-    })
-    .finally(() => {
-        document.querySelector('div').style.display = 'none';
-        isGameStarted = true;
-    })
-})
-
-continueBtn.addEventListener('click', () => {
-    loadData();
-    const imagePromises = SOURCES.map(src => {
-        return new Promise((resolve, reject) => {
-          const img = new Image();
-          img.onload = resolve;
-          img.onerror = reject;
-          img.src = src;
-        });
-      });
-      
-    Promise.all(imagePromises)
-    .catch(error => {
-        // Произошла ошибка при загрузке изображений
-        console.error('Ошибка загрузки изображений:', error);
-    })
-    .finally(() => {
-        loadData();
-        document.querySelector('div').style.display = 'none';
-        isGameStarted = true;
-    })
-})

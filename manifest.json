@@ -1,0 +1,19 @@
+{
+    "name": "The Elemental Saga: Knights and Wizards",
+    "short_name": "Elemental Saga",
+    "description": "Immerse yourself in the captivating world of knights and wizards. Choose your hero and embark on an epic adventure through snowy forests, dark cities, and volcanic peaks.",
+    "start_url": "./index.html",
+    "display": "standalone",
+    "background_color": "#000000",
+    "theme_color": "#3498db",
+    "icons": [
+      {
+        "src": "icon.png",
+        "sizes": "64x64",
+        "type": "image/png"
+      }
+    ],
+    "author": "biyrololo",
+    "lang": "ru"
+  }
+  

@@ -51,10 +51,16 @@ div button{
     font-size: 3rem;
     transition: all 0.2s;
     color: wheat;
+    cursor: pointer;
+    border: none;
+}
+
+div button:active{
+    scale: 0.8;
 }
 
 div button:hover{
-    scale: 0.8;
+    scale: 0.9;
 }
 
 #title{
