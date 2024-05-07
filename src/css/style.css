@@ -7,10 +7,22 @@ body{
     width: 100vw;
     height: 100vh;
 }
+
+* {
+    -webkit-tap-highlight-color: transparent; /* Для WebKit (Chrome, Safari) */
+    -moz-tap-highlight-color: transparent; /* Для Firefox */
+    -ms-tap-highlight-color: transparent; /* Для IE */
+    tap-highlight-color: transparent; /* Общий вариант */
+}
+
 canvas{
     position: absolute;
     top: 0;
     left: 0;
+    -webkit-tap-highlight-color: transparent; /* Для WebKit (Chrome, Safari) */
+    -moz-tap-highlight-color: transparent; /* Для Firefox */
+    -ms-tap-highlight-color: transparent; /* Для IE */
+    tap-highlight-color: transparent; /* Общий вариант */
 }
 .trias{
     animation: triaset ease-in-out 0.1s 0.2s;
