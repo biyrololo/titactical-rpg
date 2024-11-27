@@ -229,27 +229,20 @@ startBtn.addEventListener('click', () => {
 })
 
 continueBtn.addEventListener('click', () => {
+    let images_loaded = 0;
     const imagePromises = SOURCES.map(src => {
-        return new Promise((resolve, reject) => {
-          const img = new Image();
-          img.onload = resolve;
-          img.onerror = reject;
-          img.src = src;
-        });
+        let img = new Image();
+        img.onload = () => {
+            images_loaded++;
+            if(images_loaded === SOURCES.length){
+                addGameScript();
+                isLoadedDataNeeded = true;
+                document.querySelector('div').style.display = 'none';
+            }
+        };
+        img.src = src;
       });
-      
-    Promise.all(imagePromises)
-    .then(
-        ()=>{
-            addGameScript();
-            isLoadedDataNeeded = true;
-            document.querySelector('div').style.display = 'none';
-        }
-    )
-    .catch(error => {
-        // Произошла ошибка при загрузке изображений
-        console.error('Ошибка загрузки изображений:', error);
-    })
+    
 })
 
 /**

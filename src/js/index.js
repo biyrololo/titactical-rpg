@@ -418,7 +418,7 @@ class EntityMenu extends Entity{
     }
 }
 class Btn{
-    constructor(pos, size, text, color,font, onclick){
+    constructor(pos, size, text, color,font, onclick, is_disabled=()=>{return false}){
         this.pos=pos;
         this.size=size;
         this.text=text;
@@ -428,6 +428,7 @@ class Btn{
         this.drawn={color: color.bg};
         this.shift=0;
         this.hoverParams={value: 0, max: 5, state: 0, lastState: 0, back: false};
+        this.is_disabled=is_disabled;
     }
     isHover(){
         return (mouse.x>this.pos.x && mouse.x<this.pos.x+this.size.width && mouse.y>this.pos.y && mouse.y  < this.pos.y+this.size.height);
@@ -460,8 +461,10 @@ class Btn{
             this.hoverParams.state=0;}
         if(this.hoverParams.back) this.endHover();
         c.fillStyle=this.drawn.color;
+        if(this.is_disabled()) c.fillStyle='rgb(90,90,90)';
         c.fillRect(this.pos.x,this.pos.y,this.size.width,this.size.height*0.8+this.shift);
         c.fillStyle=this.color.bottom;
+        if(this.is_disabled()) c.fillStyle='rgb(60,60,60)';
         c.fillRect(this.pos.x,this.pos.y+this.size.height*0.8+this.shift,this.size.width,this.size.height*0.2-this.shift);
         c.fillStyle=this.color.text;
         c.font=`${this.font.size}px ${this.font.name}`;
@@ -580,6 +583,7 @@ const attacks={'Goblin':{
 };
 
 function openFullscreen(element) {
+    return;
     if (element.requestFullscreen) {
       element.requestFullscreen();
     } else if (element.mozRequestFullScreen) { // Для Firefox
@@ -663,7 +667,7 @@ firstLevels= new Btn({x:canvas.width*0.05,y:canvas.height*0.1},{width: canvas.wi
     gameBgLevel="#1A600A";
     curLevelAchievment = PLAYER_ACHIEVEMENTS.firstLevel;
     loadFirst();
-});}),
+});}, ()=>false),
 secondLevels = new Btn({x:canvas.width*0.2,y:canvas.height*0.1},{width: canvas.width*0.15,height:canvas.height*0.2/DRAWN_SIZE_RATIO},'Зимний лес',{bg:'#8BD0E5 ',text:'white', bottom: '#708090',hover:'#4DA6FF'},{name: 'pixel', size: canvas.width*0.05},()=>{if(!PLAYER_ACHIEVEMENTS.firstLevel.isCompleted) return;if(!transitionParams.active)transition(true, ()=>{
     changeMoneyParams.time=0;
     changeMoney();
@@ -673,7 +677,7 @@ secondLevels = new Btn({x:canvas.width*0.2,y:canvas.height*0.1},{width: canvas.w
     gameBgLevel="#065F7F";
     curLevelAchievment = PLAYER_ACHIEVEMENTS.secondLevel;
     loadFirst();
-});}),
+});}, ()=>{return !PLAYER_ACHIEVEMENTS.firstLevel.isCompleted}),
 cemeteryLevels = new Btn({x:canvas.width*0.15,y:canvas.height*0.4},{width: canvas.width*0.25,height:canvas.height*0.2/DRAWN_SIZE_RATIO},'Мрачный город',{bg:'#4B0082',text:'white', bottom: '#404040',hover:'#8B0000 '},{name: 'pixel', size: canvas.width*0.05},()=>{if(!PLAYER_ACHIEVEMENTS.secondLevel.isCompleted) return;if(!transitionParams.active)transition(true, ()=>{
     changeMoneyParams.time=0;
     changeMoney();
@@ -684,7 +688,7 @@ cemeteryLevels = new Btn({x:canvas.width*0.15,y:canvas.height*0.4},{width: canva
     colorUI="white";
     curLevelAchievment = PLAYER_ACHIEVEMENTS.cemeteryLevel;
     loadFirst();
-});}),
+});}, ()=>{return !PLAYER_ACHIEVEMENTS.secondLevel.isCompleted}),
 thirdLevels = new Btn({x:canvas.width*0.45,y:canvas.height*0.4},{width: canvas.width*0.25,height:canvas.height*0.2/DRAWN_SIZE_RATIO},'Подножие вуклана',{bg:'#D2B48C',text:'white', bottom: '#895838',hover:'#CD853F '},{name: 'pixel', size: canvas.width*0.05},()=>{if(!PLAYER_ACHIEVEMENTS.cemeteryLevel.isCompleted) return;if(!transitionParams.active)transition(true, ()=>{
     changeMoneyParams.time=0;
     changeMoney();
@@ -695,7 +699,7 @@ thirdLevels = new Btn({x:canvas.width*0.45,y:canvas.height*0.4},{width: canvas.w
     colorUI="white";
     curLevelAchievment = PLAYER_ACHIEVEMENTS.thirdLevel;
     loadFirst();
-});}),
+});}, ()=>{return !PLAYER_ACHIEVEMENTS.thirdLevel.isCompleted}),
 fourthLevels = new Btn({x:canvas.width*0.75,y:canvas.height*0.4},{width: canvas.width*0.15,height:canvas.height*0.2/DRAWN_SIZE_RATIO},'Вулкан',{bg:'#FF4500 ',text:'white', bottom: '#8B0000',hover:'#FF5D00'},{name: 'pixel', size: canvas.width*0.05},()=>{if(!PLAYER_ACHIEVEMENTS.thirdLevel.isCompleted) return;if(!transitionParams.active)transition(true, ()=>{
     changeMoneyParams.time=0;
     changeMoney();
@@ -706,7 +710,7 @@ fourthLevels = new Btn({x:canvas.width*0.75,y:canvas.height*0.4},{width: canvas.
     colorUI="white";
     curLevelAchievment = PLAYER_ACHIEVEMENTS.fourthLevel;
     loadFirst();
-});}),
+});}, ()=>{return !PLAYER_ACHIEVEMENTS.fourthLevel.isCompleted}),
 fivthLevels = new Btn({x:canvas.width*0.725,y:canvas.height*0.1},{width: canvas.width*0.2,height:canvas.height*0.2/DRAWN_SIZE_RATIO},'Горные вершины',{bg:'#B0C4DE ',text:'white', bottom: '#A9A9A9',hover:'#4682B4'},{name: 'pixel', size: canvas.width*0.05},()=>{if(!PLAYER_ACHIEVEMENTS.fourthLevel.isCompleted) return;if(!transitionParams.active)transition(true, ()=>{
     changeMoneyParams.time=0;
     changeMoney();
@@ -717,8 +721,7 @@ fivthLevels = new Btn({x:canvas.width*0.725,y:canvas.height*0.1},{width: canvas.
     colorUI="white";
     curLevelAchievment = PLAYER_ACHIEVEMENTS.fourthLevel;
     loadFirst();
-});}),
-
+});}, ()=>{return !PLAYER_ACHIEVEMENTS.fifthLevel.isCompleted}),
 enemiesPos={
     1:{x:canvas.width*0.57,y:canvas.height*0.2}, 
     2:{x:canvas.width*0.9,y:canvas.height*0.15}, 
